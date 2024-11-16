@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import './App.css';
-import Register from './register'; 
-import Login from './login'; 
+import './RegisterPage.css';
+import Register from '../components/register'; 
+import Login from '../components/login'; 
 
-function App() {
+function RegisterPage() {
   const [activePage, setActivePage] = useState('register'); 
 
   const handlePageChange = (page) => {
@@ -27,4 +27,4 @@ function App() {
   );
 }
 
-export default App;
+export default RegisterPage;
