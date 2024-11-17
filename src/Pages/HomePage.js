@@ -1,164 +1,288 @@
-import React from 'react';
-import { Home, ShoppingCart, User } from 'lucide-react';
-import './HomePage.css';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
-const Header = () => (
-    <header className="header">
-      <img src="/placeholder.svg?height=50&width=150" alt="Tillobal Sirt Logo" className="logo" />
-      <nav className="nav">
-        <a href="#products" className="nav-link">Products</a>
-        <a href="#about" className="nav-link">About</a>
-        <a href="#contact" className="nav-link">Contact us</a>
-      </nav>
-      <div className="user-actions">
-        <Link to="/login">
-          <User className="icon" />
-        </Link>
-        <Link to="/cart">
-          <ShoppingCart className="icon" />
+const products = [
+  {
+    id: 1,
+    name: "Roasted Cracked Salted Pistachios",
+    price: 12.99,
+    image: "/assets/images/kavrulmus.png"
+  },
+  {
+    id: 2,
+    name: "(Not Roasted) Raw Pistachios",
+    price: 11.99,
+    image: "/assets/images/kavrulmamis.png"
+  },
+  {
+    id: 3,
+    name: "Tree-Ripened Shelled Pistachios",
+    price: 10.99,
+    image: "/assets/images/kuru.png"
+  },
+  {
+    id: 4,
+    name: "Roasted Pistachio Kernels",
+    price: 14.99,
+    image: "/assets/images/ic.png"
+  },
+  {
+    id: 5,
+    name: "(Not Roasted) Raw Pistachio Kernels",
+    price: 8.99,
+    image: "/assets/images/ic2.png"
+  },
+  {
+    id: 6,
+    name: "Chopped File Siirt Pistachio Kernels",
+    price: 13.99,
+    image: "/assets/images/kesik.png"
+  },
+  {
+    id: 7,
+    name: "Pistachio flour",
+    price: 7.99,
+    image: "/assets/images/toz.png"
+  }
+];
+
+const SimpleDialog = ({ isOpen, onClose, title, content }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-500"
+          >
+            ×
+          </button>
+        </div>
+        <div className="text-gray-600">
+          {content}
+        </div>
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Hero = () => (
+  <div className="relative h-screen">
+    <div 
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ backgroundImage: "url('/assets/images/background.png')" }}
+    />
+    <div className="absolute inset-0 bg-black bg-opacity-30" />
+    <div className="relative h-full flex items-center justify-center">
+      <div className="bg-white bg-opacity-90 p-12 rounded-lg max-w-2xl mx-4 text-center">
+        <h1 className="text-4xl font-bold mb-4">PistachioHut</h1>
+        <p className="text-gray-700 mb-6">
+          From our fields to your door: pure, authentic pistachios. Always fresh, delivered everywhere.
+        </p>
+        <Link to="/products">
+          <button className="bg-green-500 text-white px-8 py-3 rounded-md hover:bg-green-600 transition-colors">
+            Check our pistachio collection
+          </button>
         </Link>
       </div>
-    </header>
-  );
-  
-const Hero = () => (
-<div className="hero">
-    <div className="hero-content">
-    <h1 className="hero-title">Tillobal Sirt Fistigi</h1>
-    <p className="hero-subtitle">Taste the difference with our premium pistachios</p>
-    <button className="cta-button">Check all of our pistachios</button>
     </div>
-</div>
+  </div>
 );
 
-const ProductCard = ({ name, price, image }) => (
-<div className="product-card">
-    <img src={image} alt={name} className="product-image" />
-    <h3 className="product-name">{name}</h3>
-    <p className="product-price">${price.toFixed(2)}</p>
-</div>
+const ProductCard = ({ id, name, price, image }) => (
+  <Link to={`/product/${id}`} className="block">
+    <div className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+      <img src={image} alt={name} className="w-full h-48 object-cover rounded-md mb-4" />
+      <h3 className="text-lg font-medium text-gray-800 mb-2">{name}</h3>
+      <p className="text-green-600 font-bold">${price.toFixed(2)}</p>
+    </div>
+  </Link>
 );
 
 const Products = () => (
-<section className="products-section" id="products">
-    <h2 className="section-title">Products</h2>
-    <div className="products-grid">
-    <ProductCard name="Roasted Cracked Salted Pistachios" price={12.99} image="/assets/images/kavrulmus.png" />
-    <ProductCard name="(Not Roasted) Raw Pistachios" price={11.99} image="/assets/images/kavrulmamis.png" />
-    <ProductCard name="Tree-Ripened Shelled Pistachios" price={10.99} image="/assets/images/kuru.png" />
-    <ProductCard name="Roasted Pistachio Kernels" price={14.99} image="/assets/images/ic.png" />
-    <ProductCard name="(Not Roasted) Raw Pistachio Kernels" price={8.99} image="/assets/images/ic2.png" />
-    <ProductCard name="Chopped File Siirt Pistachio Kernels" price={13.99} image="/assets/images/kesik.png" />
-    <ProductCard name="Pistachio flour" price={7.99} image="/assets/images/toz.png" />
+  <section id="products" className="py-16 bg-gray-50">
+    <div className="container mx-auto px-4">
+      <h2 className="text-3xl font-bold text-center mb-4">Products</h2>
+      <p className="text-center text-gray-600 mb-12">Order it for you or for your beloved ones</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {products.map(product => (
+          <ProductCard key={product.id} {...product} />
+        ))}
+      </div>
     </div>
-</section>
+  </section>
 );
 
-const Feature = () => (
-<section className="feature-section" id="about">
-    <div className="feature-content">
-    <h2 className="section-title">Organic and tasteful pistachios</h2>
-    <ul className="feature-list">
-        <li>Eco-sustainable</li>
-        <li>Organic</li>
-        <li>Supporting local farmers</li>
-    </ul>
-    <button className="cta-button">Learn more</button>
-    </div>
-    <div className="feature-image">
-    <img src="/assets/images/PistachioTreePhoto.png" alt="Pistachio tree" />
-    </div>
-</section>
-);
+const Feature = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-const Testimonial = ({ quote, author, rating }) => (
-<div className="testimonial-card">
-    <div className="testimonial-rating">
-    {[...Array(rating)].map((_, i) => (
-        <span key={i} className="star">★</span>
-    ))}
+  const learnMoreContent = {
+    title: 'Our Commitment to Quality',
+    content: `Discover what makes PistachioHut pistachios truly special:
+
+    🌱 Eco-sustainable Practices:
+    • Solar-powered processing facilities
+    • Water conservation techniques
+    • Minimal packaging waste
+    • Composting and recycling programs
+
+    🌿 Organic Certification:
+    • No artificial pesticides or fertilizers
+    • Non-GMO verified
+    • Regular soil quality monitoring
+    • Natural pest control methods
+
+    🤝 Supporting Local Communities:
+    • Fair wages for all workers
+    • Educational programs for local farmers
+    • Community development initiatives
+    • Local employment opportunities
+
+    🔍 Quality Control:
+    • Hand-selected pistachios
+    • Multiple quality check points
+    • State-of-the-art processing
+    • Rigorous food safety standards
+
+    Join us in our mission to provide the best pistachios while protecting our environment and supporting our local communities.`
+  };
+
+  return (
+    <section id="about" className="py-16 bg-white">
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
+        <div className="md:w-1/2">
+          <h2 className="text-3xl font-bold mb-6">Organic and tasteful pistachios</h2>
+          <ul className="space-y-4 mb-8">
+            <li className="flex items-center">
+              <span className="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+              Eco-sustainable
+            </li>
+            <li className="flex items-center">
+              <span className="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+              Vegan
+            </li>
+            <li className="flex items-center">
+              <span className="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+              Organic
+            </li>
+            <li className="flex items-center">
+              <span className="w-4 h-4 bg-green-500 rounded-full mr-3"></span>
+              Supporting local businesses
+            </li>
+          </ul>
+          <button 
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors"
+          >
+            Learn more
+          </button>
+        </div>
+        <div className="md:w-1/2">
+          <img 
+            src="/assets/images/PistachioTreePhoto.png" 
+            alt="Fresh pistachios on tree" 
+            className="rounded-lg shadow-lg"
+          />
+        </div>
+      </div>
+
+      <SimpleDialog 
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        title={learnMoreContent.title}
+        content={learnMoreContent.content}
+      />
+    </section>
+  );
+};
+
+const TestimonialCard = ({ quote, author, rating, image }) => (
+  <div className="bg-white p-6 rounded-lg shadow-sm">
+    <div className="flex justify-center mb-4">
+      <img src={image} alt={author} className="w-16 h-16 rounded-full" />
     </div>
-    <p className="testimonial-quote">"{quote}"</p>
-    <p className="testimonial-author">{author}</p>
-</div>
+    <div className="flex justify-center mb-4">
+      <div className="flex gap-1">
+        {[...Array(rating)].map((_, i) => (
+          <span key={i} className="text-3xl text-yellow-400">★</span>
+        ))}
+      </div>
+    </div>
+    <p className="text-center text-gray-700 mb-4 italic">"{quote}"</p>
+    <p className="text-center font-medium">{author}</p>
+  </div>
 );
 
 const Testimonials = () => (
-<section className="testimonials-section">
-    <h2 className="section-title">Testimonials</h2>
-    <div className="testimonials-grid">
-    <Testimonial quote="I love it! Best pistachios ever!" author="John Doe" rating={5} />
-    <Testimonial quote="Excellent product for snacking" author="Jane Smith" rating={5} />
-    <Testimonial quote="Organic, natural, and healthy - love these!" author="Mike Johnson" rating={5} />
+  <section className="py-16 bg-gray-50">
+    <div className="container mx-auto px-4">
+      <h2 className="text-3xl font-bold text-center mb-4">Testimonials</h2>
+      <p className="text-center text-gray-600 mb-12">Some quotes from our happy customers</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <TestimonialCard 
+          quote="Best pistachio ever!"
+          author="Linda"
+          rating={4}
+          image="/assets/images/linda.png"
+        />
+        <TestimonialCard 
+          quote="Recommended for everyone!"
+          author="Edward"
+          rating={5}
+          image="/assets/images/edward.png"
+        />
+        <TestimonialCard 
+          quote="Organic, natural, and tasteful - just great"
+          author="Alex"
+          rating={4}
+          image="/assets/images/alex.png"
+        />
+      </div>
     </div>
-</section>
+  </section>
 );
 
-const PopularProducts = () => (
-<section className="popular-products-section">
-    <h2 className="section-title">Popular</h2>
-    <div className="products-grid">
-    <ProductCard name="Roasted Cracked Salted Pistachios" price={12.99} image="/assets/images/kavrulmus.png" />
-    <ProductCard name="(Not Roasted) Raw Pistachios" price={11.99} image="/assets/images/kavrulmamis.png" />
-    <ProductCard name="Tree-Ripened Shelled Pistachios" price={10.99} image="/assets/images/kuru.png" />
-    <ProductCard name="Roasted Pistachio Kernels" price={14.99} image="/assets/images/ic.png" />
-    </div>
-</section>
-);
-
-const Footer = () => (
-<footer className="footer">
-    <div className="footer-content">
-    <div className="footer-section">
-        <img src="/placeholder.svg?height=50&width=150" alt="Tillobal Sirt Logo" className="footer-logo" />
-        <p>Your natural gift from Siirt</p>
-    </div>
-    <div className="footer-section">
-        <h3 className="footer-title">Products</h3>
-        <ul className="footer-list">
-        <li><a href="#" className="footer-link">New arrivals</a></li>
-        <li><a href="#" className="footer-link">Best sellers</a></li>
-        <li><a href="#" className="footer-link">Sale</a></li>
-        </ul>
-    </div>
-    <div className="footer-section">
-        <h3 className="footer-title">About</h3>
-        <ul className="footer-list">
-        <li><a href="#" className="footer-link">Our story</a></li>
-        <li><a href="#" className="footer-link">Sustainability</a></li>
-        <li><a href="#" className="footer-link">Contact us</a></li>
-        </ul>
-    </div>
-    <div className="footer-section">
-        <h3 className="footer-title">Help</h3>
-        <ul className="footer-list">
-        <li><a href="#" className="footer-link">Shipping</a></li>
-        <li><a href="#" className="footer-link">Returns</a></li>
-        <li><a href="#" className="footer-link">FAQ</a></li>
-        </ul>
-    </div>
-    </div>
-    <div className="footer-bottom">
-    <p>&copy; 2024 Tillobal Sirt. All rights reserved.</p>
-    </div>
-</footer>
-);
-
-
+const PopularProducts = () => {
+  const popularProducts = products.slice(0, 4);
+  
+  return (
+    <section className="py-16 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center mb-4">Popular</h2>
+        <p className="text-center text-gray-600 mb-12">Our top-selling products that you may like</p>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {popularProducts.map(product => (
+            <ProductCard key={product.id} {...product} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const HomePage = () => (
-    <div className="app">
-        <Header />
-        <main>
-            <Hero />
-            <Products />
-            <Feature />
-            <Testimonials />
-            <PopularProducts />
-        </main>
-        <Footer />
-    </div>
+  <div className="min-h-screen">
+    <Header />
+    <Hero />
+    <Products />
+    <Feature />
+    <Testimonials />
+    <PopularProducts />
+    <Footer />
+  </div>
 );
 
-export default HomePage
+export default HomePage;
