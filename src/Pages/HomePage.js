@@ -1,7 +1,7 @@
 import React from 'react';
 import { Home, ShoppingCart, User } from 'lucide-react';
 import './HomePage.css';
-
+import { Link } from 'react-router-dom';
 
 const Header = () => (
     <header className="header">
@@ -12,8 +12,12 @@ const Header = () => (
         <a href="#contact" className="nav-link">Contact us</a>
       </nav>
       <div className="user-actions">
-        <User className="icon" />
-        <ShoppingCart className="icon" />
+        <Link to="/login">
+          <User className="icon" />
+        </Link>
+        <Link to="/cart">
+          <ShoppingCart className="icon" />
+        </Link>
       </div>
     </header>
   );
@@ -158,4 +162,3 @@ const HomePage = () => (
 );
 
 export default HomePage
-
