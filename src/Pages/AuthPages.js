@@ -1,20 +1,11 @@
 import React, { useState } from 'react';
-import { User, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const AuthLayout = ({ children }) => (
   <div className="min-h-screen flex flex-col">
-    <header className="header">
-      <img src="/placeholder.svg?height=50&width=150" alt="PistachioHut Logo" className="logo" />
-      <nav className="nav">
-        <a href="#products" className="nav-link">Products</a>
-        <a href="#about" className="nav-link">About</a>
-        <a href="#contact" className="nav-link">Contact us</a>
-      </nav>
-      <div className="user-actions">
-        <User className="icon" />
-        <ShoppingCart className="icon" />
-      </div>
-    </header>
+    <Header />
     <main className="flex-1 flex items-center justify-center bg-gray-50 py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-sm p-8">
         {children}
@@ -55,9 +46,9 @@ const LoginPage = () => {
             />
           </div>
           <div className="text-right">
-            <a href="#forgot-password" className="text-sm text-gray-600 hover:text-gray-800">
+            <Link to="/forgot-password" className="text-sm text-gray-600 hover:text-gray-800">
               Forgot Password?
-            </a>
+            </Link>
           </div>
           <button
             type="submit"
@@ -68,9 +59,9 @@ const LoginPage = () => {
         </form>
         <div className="text-center text-sm">
           <span className="text-gray-600">New User? </span>
-          <a href="/signup" className="text-green-600 hover:text-green-700 font-medium">
+          <Link to="/signup" className="text-green-600 hover:text-green-700 font-medium">
             Register
-          </a>
+          </Link>
         </div>
       </div>
     </AuthLayout>
@@ -148,51 +139,13 @@ const SignupPage = () => {
         </form>
         <div className="text-center text-sm">
           <span className="text-gray-600">Already registered? </span>
-          <a href="/login" className="text-green-600 hover:text-green-700 font-medium">
+          <Link to="/login" className="text-green-600 hover:text-green-700 font-medium">
             Login
-          </a>
+          </Link>
         </div>
       </div>
     </AuthLayout>
   );
 };
-
-const Footer = () => (
-  <footer className="footer">
-    <div className="footer-content">
-      <div className="footer-section">
-        <img src="/placeholder.svg?height=50&width=150" alt="PistachioHut Logo" className="footer-logo" />
-        <p>Your natural gift from Siirt</p>
-      </div>
-      <div className="footer-section">
-        <h3 className="footer-title">Products</h3>
-        <ul className="footer-list">
-          <li><a href="#" className="footer-link">New arrivals</a></li>
-          <li><a href="#" className="footer-link">Best sellers</a></li>
-          <li><a href="#" className="footer-link">Sale</a></li>
-        </ul>
-      </div>
-      <div className="footer-section">
-        <h3 className="footer-title">About</h3>
-        <ul className="footer-list">
-          <li><a href="#" className="footer-link">Our story</a></li>
-          <li><a href="#" className="footer-link">Sustainability</a></li>
-          <li><a href="#" className="footer-link">Contact us</a></li>
-        </ul>
-      </div>
-      <div className="footer-section">
-        <h3 className="footer-title">Help</h3>
-        <ul className="footer-list">
-          <li><a href="#" className="footer-link">Shipping</a></li>
-          <li><a href="#" className="footer-link">Returns</a></li>
-          <li><a href="#" className="footer-link">FAQ</a></li>
-        </ul>
-      </div>
-    </div>
-    <div className="footer-bottom">
-      <p>&copy; 2024 PistachioHut. All rights reserved.</p>
-    </div>
-  </footer>
-);
 
 export { LoginPage, SignupPage };
