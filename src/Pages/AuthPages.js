@@ -4,6 +4,7 @@ import { AuthContext } from '../contexts/AuthContext'; // import AuthContext
 import api from '../utils/axiosInstance'; // import axios instance
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axios from 'axios'
 
 const AuthLayout = ({ children }) => (
   <div className="min-h-screen flex flex-col">
@@ -27,16 +28,18 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await api.post('/login', {
+      const response = await axios.post('http://localhost:5000/login', {
         identifier: email,
         password,
       });
-      login(response.data.access_token); // Call login function after successful login
-      navigate('/'); // Redirect after successful login
+      localStorage.setItem('accessToken', response.data.access_token);
+      localStorage.setItem('refreshToken', response.data.refresh_token);
+      navigate('/'); // Redirect to a dashboard or another page
     } catch (err) {
       setError(err.response?.data?.msg || 'Login failed');
     }
   };
+  
 
   return (
     <AuthLayout>

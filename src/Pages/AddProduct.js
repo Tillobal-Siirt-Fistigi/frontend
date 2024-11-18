@@ -17,7 +17,7 @@ const AddProductPage = () => {
     image_link: '',
     dimensions: '',
     weight: '',
-    popularity: 100,
+    popularity: 0,
   });
   
   const [error, setError] = useState('');
