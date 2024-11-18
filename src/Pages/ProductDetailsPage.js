@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ShoppingCart, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Heart } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -137,11 +137,20 @@ const ProductDetailsPage = () => {
               </div>
             </div>
 
-            {/* Add to Cart Button */}
-            <button className="w-full bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
-              <ShoppingCart size={20} />
-              <span>Add to cart</span>
-            </button>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              {/* Add to Cart Button */}
+              <button className="flex-1 bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+                <ShoppingCart size={20} />
+                <span>Add to cart</span>
+              </button>
+
+              {/* Add to Wishlist Button */}
+              <button className="flex-1 border border-green-500 text-green-500 py-3 px-4 rounded-md hover:bg-green-50 transition-colors flex items-center justify-center space-x-2">
+                <Heart size={20} />
+                <span>Wishlist</span>
+              </button>
+            </div>
 
             {/* Free Shipping Banner */}
             <div className="bg-green-50 text-green-700 p-3 rounded-md flex items-center justify-center space-x-2">
