@@ -20,6 +20,7 @@ This repository contains the **frontend code** for the Online Store project, dev
 - **React.js**: Main framework for building the user interface.
 - **CSS**: Styling for components and layouts.
 - **React Router**: Handles navigation between pages.
+
 ## 🔧 Setup Instructions
 Follow these steps to run the project locally:
 
@@ -46,6 +47,7 @@ Follow these steps to run the project locally:
    ```
 5. Open your browser and navigate to `http://localhost:3000` to view the app.
 
+---
 
 ## 🧪 Project Contributors
 
@@ -54,3 +56,5 @@ Follow these steps to run the project locally:
 - Serhan YILMAZ
 - Mustafa Harun Şendur
 - Mustafa Mert Yıldızbaş
+
+---
