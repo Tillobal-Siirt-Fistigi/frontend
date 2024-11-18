@@ -37,52 +37,8 @@ const SimpleDialog = ({ isOpen, onClose, title, content }) => {
   );
 };
 
-
-const dialogContents = {
-  about: {
-    title: 'About PistachioHut',
-    content: `At PistachioHut, we're dedicated to bringing you the finest pistachios from our carefully maintained orchards. Our journey began with a simple mission: to provide the highest quality pistachios while maintaining sustainable and ethical farming practices.
-
-    Our pistachios are grown in the fertile regions of Siirt, where the unique climate and soil conditions create the perfect environment for producing the most flavorful nuts. We take pride in our:
-
-    • Traditional farming methods combined with modern sustainable practices
-    • Rigorous quality control at every stage of production
-    • Direct partnerships with local farmers
-    • Commitment to environmental stewardship
-
-    Every package of PistachioHut pistachios represents our dedication to quality, sustainability, and the rich agricultural heritage of our region.`
-  },
-  contact: {
-    title: 'Contact Us',
-    content: `We'd love to hear from you! Here's how you can reach us:
-
-    📧 Email: support@pistachiohut.com
-    📞 Phone: +1 (555) 123-4567
-    
-    Customer Service Hours:
-    Monday - Friday: 9:00 AM - 6:00 PM EST
-    
-    Business Address:
-    PistachioHut Headquarters
-    123 Pistachio Lane
-    Siirt, Turkey
-
-    For wholesale inquiries, please email: wholesale@pistachiohut.com
-    
-    We aim to respond to all inquiries within 24 hours during business days.`
-  }
-};
-
 const Header = () => {
   const [dialogContent, setDialogContent] = useState({ isOpen: false, title: '', content: '' });
-
-  const handleDialogOpen = (type) => {
-    setDialogContent({
-      isOpen: true,
-      title: dialogContents[type].title,
-      content: dialogContents[type].content
-    });
-  };
 
   const handleDialogClose = () => {
     setDialogContent({ ...dialogContent, isOpen: false });
