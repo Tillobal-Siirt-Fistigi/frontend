@@ -1,21 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { User, ShoppingCart, CheckCircle } from 'lucide-react';
-
-const Header = () => (
-  <header className="header">
-    <img src="/placeholder.svg?height=50&width=150" alt="PistachioHut Logo" className="logo" />
-    <nav className="nav">
-      <a href="#products" className="nav-link">Products</a>
-      <a href="#about" className="nav-link">About</a>
-      <a href="#contact" className="nav-link">Contact us</a>
-    </nav>
-    <div className="user-actions">
-      <User className="icon" />
-      <ShoppingCart className="icon" />
-    </div>
-  </header>
-);
+import { CheckCircle } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const OrderSummary = () => (
   <div className="bg-gray-50 p-6 rounded-lg">
@@ -59,19 +46,13 @@ const ThankYouPage = () => {
       <Header />
       
       <main className="flex-1 container mx-auto px-4 py-8">
-        {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 text-sm mb-8">
           <Link to="/cart" className="text-gray-500">Cart</Link>
-          <span className="text-gray-300">/</span>
-          <Link to="/details" className="text-gray-500">Details</Link>
-          <span className="text-gray-300">/</span>
-          <Link to="/shipping" className="text-gray-500">Shipping</Link>
           <span className="text-gray-300">/</span>
           <span className="text-gray-900">Payment</span>
         </nav>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Confirmation Message */}
           <div className="flex flex-col items-center text-center">
             <div className="w-16 h-16 mb-6">
               <CheckCircle className="w-full h-full text-green-500" />
@@ -100,46 +81,11 @@ const ThankYouPage = () => {
             </div>
           </div>
 
-          {/* Order Summary */}
           <OrderSummary />
         </div>
       </main>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <img src="/placeholder.svg?height=50&width=150" alt="PistachioHut Logo" className="footer-logo" />
-            <p>Your natural gift from Siirt</p>
-          </div>
-          <div className="footer-section">
-            <h3 className="footer-title">Products</h3>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">New arrivals</a></li>
-              <li><a href="#" className="footer-link">Best sellers</a></li>
-              <li><a href="#" className="footer-link">Sale</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3 className="footer-title">About</h3>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">Our story</a></li>
-              <li><a href="#" className="footer-link">Sustainability</a></li>
-              <li><a href="#" className="footer-link">Contact us</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3 className="footer-title">Help</h3>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">Shipping</a></li>
-              <li><a href="#" className="footer-link">Returns</a></li>
-              <li><a href="#" className="footer-link">FAQ</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; 2024 PistachioHut. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
