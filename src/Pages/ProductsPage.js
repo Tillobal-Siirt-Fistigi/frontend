@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Search, SortAsc } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axios from 'axios';
+import { AuthContext } from '../contexts/AuthContext';
 
 const ProductCard = ({ id, name, price, image, stockCount }) => {
   const navigate = useNavigate();
@@ -12,14 +14,14 @@ const ProductCard = ({ id, name, price, image, stockCount }) => {
   };
 
   return (
-    <div 
+    <div
       className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer relative"
       onClick={handleClick}
     >
       <div className="aspect-square overflow-hidden">
-        <img 
-          src={image} 
-          alt={name} 
+        <img
+          src={image}
+          alt={name}
           className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
         />
       </div>
@@ -37,70 +39,31 @@ const ProductCard = ({ id, name, price, image, stockCount }) => {
 };
 
 const ProductsPage = () => {
+  const { user, isAuthenticated } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('recommended');
+  const [products, setProducts] = useState([]);  // Holds the products data from the API
+  const [loading, setLoading] = useState(true);  // To handle loading state
+  const [error, setError] = useState('');  // To handle any error that occurs during the fetch
 
-  const initialProducts = [
-    {
-      id: 1,
-      name: "Roasted Cracked Salted Pistachios",
-      price: 12.99,
-      image: "/assets/images/kavrulmus.png",
-      popularity: 95,
-      stockCount: 50
-    },
-    {
-      id: 2,
-      name: "(Not Roasted) Raw Pistachios",
-      price: 11.99,
-      image: "/assets/images/kavrulmamis.png",
-      popularity: 85,
-      stockCount: 0  // Out of stock
-    },
-    {
-      id: 3,
-      name: "Tree-Ripened Shelled Pistachios",
-      price: 10.99,
-      image: "/assets/images/kuru.png",
-      popularity: 90,
-      stockCount: 30
-    },
-    {
-      id: 4,
-      name: "Roasted Pistachio Kernels",
-      price: 14.99,
-      image: "/assets/images/ic.png",
-      popularity: 88,
-      stockCount: 20
-    },
-    {
-      id: 5,
-      name: "(Not Roasted) Raw Pistachio Kernels",
-      price: 8.99,
-      image: "/assets/images/ic2.png",
-      popularity: 82,
-      stockCount: 0  // Out of stock
-    },
-    {
-      id: 6,
-      name: "Chopped File Siirt Pistachio Kernels",
-      price: 13.99,
-      image: "/assets/images/kesik.png",
-      popularity: 78,
-      stockCount: 15
-    },
-    {
-      id: 7,
-      name: "Pistachio flour",
-      price: 7.99,
-      image: "/assets/images/toz.png",
-      popularity: 75,
-      stockCount: 40
-    }
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/products/all');  // Fetch products from backend
+        console.log(response.data)
+        setProducts(response.data);  // Set fetched products to state
+      } catch (err) {
+        setError('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredAndSortedProducts = initialProducts
-    .filter(product => 
+    fetchProducts();
+  }, []);
+
+  const filteredAndSortedProducts = products
+    .filter(product =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
     .sort((a, b) => {
@@ -116,15 +79,21 @@ const ProductsPage = () => {
       }
     });
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
+
       <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-2xl font-medium text-gray-900 text-center mb-8">
-          All Products
-        </h1>
-        
+        <h1 className="text-2xl font-medium text-gray-900 text-center mb-8">All Products</h1>
+
         <div className="mb-8 flex flex-col sm:flex-row gap-4 items-center">
           {/* Search Bar */}
           <div className="relative flex-1">
@@ -153,7 +122,7 @@ const ProductsPage = () => {
             </select>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredAndSortedProducts.map((product) => (
             <ProductCard

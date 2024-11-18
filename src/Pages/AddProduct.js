@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import { storage } from '../firebase'; 
 
 const AddProductPage = () => {
   const [productData, setProductData] = useState({
@@ -20,6 +21,7 @@ const AddProductPage = () => {
     popularity: 0,
   });
   
+  const [imageFile, setImageFile] = useState(null); // To store selected image file
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
@@ -32,22 +34,64 @@ const AddProductPage = () => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);  // Set the image file selected by the user
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      // Send the product data to the backend to add the product
-      const response = await axios.post('http://localhost:5000/products/add', productData, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`  // Send the auth token
-        }
-      });
+    // If there is an image, upload it to Firebase Storage
+    if (imageFile) {
+      const uploadTask = storage.ref(`product_images/${imageFile.name}`).put(imageFile);
 
-      // Handle success response
-      setSuccess(response.data.msg);
-      setTimeout(() => navigate('/'), 2000); // Redirect after 2 seconds
-    } catch (err) {
-      setError(err.response?.data?.msg || 'Failed to add product');
+      uploadTask.on(
+        'state_changed',
+        snapshot => {},
+        error => {
+          setError('Image upload failed');
+        },
+        async () => {
+          const imageUrl = await storage
+            .ref('product_images')
+            .child(imageFile.name)
+            .getDownloadURL();
+
+          // Once the image is uploaded, add the image URL to the product data
+          setProductData((prevData) => ({
+            ...prevData,
+            image_link: imageUrl,
+          }));
+
+          // Submit product data including the image link to the backend
+          try {
+            const response = await axios.post('http://localhost:5000/products/add', productData, {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+              }
+            });
+
+            setSuccess(response.data.msg);
+            setTimeout(() => navigate('/'), 2000); // Redirect after success
+          } catch (err) {
+            setError(err.response?.data?.msg || 'Failed to add product');
+          }
+        }
+      );
+    } else {
+      // If no image is selected, just send the product data
+      try {
+        const response = await axios.post('http://localhost:5000/products/add', productData, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          }
+        });
+
+        setSuccess(response.data.msg);
+        setTimeout(() => navigate('/'), 2000); // Redirect after success
+      } catch (err) {
+        setError(err.response?.data?.msg || 'Failed to add product');
+      }
     }
   };
 
@@ -195,6 +239,15 @@ const AddProductPage = () => {
                 value={productData.weight}
                 onChange={handleChange}
                 placeholder="Weight"
+                className="w-full px-4 py-3 border border-gray-300 rounded-md text-lg"
+              />
+            </div>
+
+            {/* Image Upload */}
+            <div>
+              <input
+                type="file"
+                onChange={handleImageChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-md text-lg"
               />
             </div>
