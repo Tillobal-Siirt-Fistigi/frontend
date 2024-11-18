@@ -64,8 +64,12 @@ const SimpleDialog = ({ isOpen, onClose, title, content }) => {
           </button>
         </div>
         <div className="text-gray-600">
-          {content}
-        </div>
+  {content.map((line, index) => (
+    <p key={index} className="mb-2">
+      {line.trim() === '' ? <br /> : line}
+    </p>
+  ))}
+</div>
         <div className="mt-6 flex justify-end">
           <button
             onClick={onClose}
@@ -94,7 +98,7 @@ const Hero = () => (
         </p>
         <Link to="/products">
           <button className="bg-green-500 text-white px-8 py-3 rounded-md hover:bg-green-600 transition-colors">
-            Check our pistachio collection
+            Check Our Pistachio Collection
           </button>
         </Link>
       </div>
@@ -131,34 +135,35 @@ const Feature = () => {
 
   const learnMoreContent = {
     title: 'Our Commitment to Quality',
-    content: `Discover what makes PistachioHut pistachios truly special:
-
-    🌱 Eco-sustainable Practices:
-    • Solar-powered processing facilities
-    • Water conservation techniques
-    • Minimal packaging waste
-    • Composting and recycling programs
-
-    🌿 Organic Certification:
-    • No artificial pesticides or fertilizers
-    • Non-GMO verified
-    • Regular soil quality monitoring
-    • Natural pest control methods
-
-    🤝 Supporting Local Communities:
-    • Fair wages for all workers
-    • Educational programs for local farmers
-    • Community development initiatives
-    • Local employment opportunities
-
-    🔍 Quality Control:
-    • Hand-selected pistachios
-    • Multiple quality check points
-    • State-of-the-art processing
-    • Rigorous food safety standards
-
-    Join us in our mission to provide the best pistachios while protecting our environment and supporting our local communities.`
+    content: [
+      `🌱 Eco-sustainable Practices:`,
+      `• Solar-powered processing facilities`,
+      `• Water conservation techniques`,
+      `• Minimal packaging waste`,
+      `• Composting and recycling programs`,
+      ``,
+      `🌿 Organic Certification:`,
+      `• No artificial pesticides or fertilizers`,
+      `• Non-GMO verified`,
+      `• Regular soil quality monitoring`,
+      `• Natural pest control methods`,
+      ``,
+      `🤝 Supporting Local Communities:`,
+      `• Fair wages for all workers`,
+      `• Educational programs for local farmers`,
+      `• Community development initiatives`,
+      `• Local employment opportunities`,
+      ``,
+      `🔍 Quality Control:`,
+      `• Hand-selected pistachios`,
+      `• Multiple quality check points`,
+      `• State-of-the-art processing`,
+      `• Rigorous food safety standards`,
+      ``,
+      `Join us in our mission to provide the best pistachios while protecting our environment and supporting our local communities.`,
+    ],
   };
+  
 
   return (
     <section id="about" className="py-16 bg-white">
