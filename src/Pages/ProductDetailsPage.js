@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ShoppingCart, Minus, Plus, Heart } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Heart, Star, StarHalf } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -70,6 +70,129 @@ const productsData = [
     weight: "100g"
   }
 ];
+
+const staticComments = [
+  {
+    id: 1,
+    name: "John Smith",
+    rating: 5,
+    date: "2024-03-15",
+    comment: "These pistachios are amazing! Very fresh and tasty."
+  },
+  {
+    id: 2,
+    name: "Maria Garcia",
+    rating: 4,
+    date: "2024-03-10",
+    comment: "Good quality product, fast shipping. Will buy again."
+  },
+  {
+    id: 3,
+    name: "Alex Johnson",
+    rating: 5,
+    date: "2024-03-05",
+    comment: "Best pistachios I've ever had. The roasting is perfect!"
+  }
+];
+
+const StarRating = ({ rating }) => {
+  const stars = [];
+  for (let i = 1; i <= 5; i++) {
+    if (i <= rating) {
+      stars.push(<Star key={i} size={16} fill="#22c55e" className="text-green-500" />);
+    } else if (i - 0.5 === rating) {
+      stars.push(<StarHalf key={i} size={16} fill="#22c55e" className="text-green-500" />);
+    } else {
+      stars.push(<Star key={i} size={16} className="text-gray-300" />);
+    }
+  }
+  return <div className="flex">{stars}</div>;
+};
+
+const CommentSection = () => {
+  const [newComment, setNewComment] = useState({
+    rating: 5,
+    comment: ''
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Will handle submission with backend later
+    console.log('Submitted:', newComment);
+    setNewComment({ rating: 5, comment: '' });
+  };
+
+  return (
+    <div className="mt-12 space-y-8">
+      <h2 className="text-xl font-medium">Customer Reviews</h2>
+
+      {/* Comments List */}
+      <div className="space-y-6">
+        {staticComments.map((comment) => (
+          <div key={comment.id} className="border-b border-gray-200 pb-6">
+            <div className="flex items-center justify-between mb-2">
+              <div>
+                <p className="font-medium">{comment.name}</p>
+                <StarRating rating={comment.rating} />
+              </div>
+              <span className="text-sm text-gray-500">
+                {new Date(comment.date).toLocaleDateString()}
+              </span>
+            </div>
+            <p className="text-gray-600 mt-2">{comment.comment}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* New Comment Form */}
+      <form onSubmit={handleSubmit} className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium mb-4">Write a Review</h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Rating
+            </label>
+            <div className="flex items-center space-x-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setNewComment(prev => ({ ...prev, rating: star }))}
+                  className="focus:outline-none"
+                >
+                  <Star
+                    size={24}
+                    className={star <= newComment.rating ? "text-green-500 fill-current" : "text-gray-300"}
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Your Review
+            </label>
+            <textarea
+              value={newComment.comment}
+              onChange={(e) => setNewComment(prev => ({ ...prev, comment: e.target.value }))
+              }
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+              placeholder="Write your review here..."
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+          >
+            Submit Review
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -179,6 +302,7 @@ const ProductDetailsPage = () => {
             </div>
           </div>
         </div>
+        <CommentSection />
       </main>
 
       <Footer />
