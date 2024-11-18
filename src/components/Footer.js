@@ -70,12 +70,15 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          {/* Logo and Tagline */}
           <div className="col-span-2">
             <Link to="/">
               <img src="/assets/images/pistachiohut_logo.png" alt="PistachioHut Logo" className="h-12 mb-4" />
             </Link>
             <p className="text-gray-400">Your natural pistachios.</p>
           </div>
+
+          {/* Products Section */}
           <div>
             <h3 className="font-bold mb-4">Products</h3>
             <ul className="space-y-2">
@@ -86,27 +89,54 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
+          {/* About Section */}
           <div>
             <h3 className="font-bold mb-4">About</h3>
             <ul className="space-y-2">
               <li>
-                <button 
+                <Link to="/about" className="text-gray-400 hover:text-white">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-400 hover:text-white">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <button
                   onClick={() => handleDialogOpen(dialogContents.shipping.title, dialogContents.shipping.content)}
                   className="text-gray-400 hover:text-white text-left w-full"
                 >
                   Shipping
                 </button>
               </li>
+            </ul>
+          </div>
+
+          {/* Info Section */}
+          <div>
+            <h3 className="font-bold mb-4">Info</h3>
+            <ul className="space-y-2">
               <li>
-                <button 
-                  onClick={() => handleDialogOpen(dialogContents.contact.title, dialogContents.contact.content)}
+                <button
+                  onClick={() => handleDialogOpen(dialogContents.help.title, dialogContents.help.content)}
                   className="text-gray-400 hover:text-white text-left w-full"
                 >
-                  Contact us
+                  Help
                 </button>
               </li>
               <li>
-                <button 
+                <button
+                  onClick={() => handleDialogOpen(dialogContents.terms.title, dialogContents.terms.content)}
+                  className="text-gray-400 hover:text-white text-left w-full"
+                >
+                  Terms & Conditions
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => handleDialogOpen(dialogContents.privacy.title, dialogContents.privacy.content)}
                   className="text-gray-400 hover:text-white text-left w-full"
                 >
@@ -115,36 +145,18 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div>
-            <h3 className="font-bold mb-4">Info</h3>
-            <ul className="space-y-2">
-              <li>
-                <button 
-                  onClick={() => handleDialogOpen(dialogContents.help.title, dialogContents.help.content)}
-                  className="text-gray-400 hover:text-white text-left w-full"
-                >
-                  Help
-                </button>
-              </li>
-              <li>
-                <button 
-                  onClick={() => handleDialogOpen(dialogContents.terms.title, dialogContents.terms.content)}
-                  className="text-gray-400 hover:text-white text-left w-full"
-                >
-                  Terms & Conditions
-                </button>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
+
+      {/* Footer Bottom Section */}
       <div className="border-t border-gray-800">
         <div className="container mx-auto px-4 py-6">
           <p className="text-center text-gray-400">©PISTACHIOHUT All Rights Reserved.</p>
         </div>
       </div>
 
-      <SimpleDialog 
+      {/* SimpleDialog */}
+      <SimpleDialog
         isOpen={dialogContent.isOpen}
         onClose={() => setDialogContent({ ...dialogContent, isOpen: false })}
         title={dialogContent.title}
