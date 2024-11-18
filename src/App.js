@@ -13,6 +13,7 @@ import Contact from './Pages/Contact';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './Pages/AdminDashboard';
 import AuthProvider from './contexts/AuthContext';
+import AddProductPage from './Pages/AddProduct';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/thank-you" element={<ThankYouPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/addProduct" element={<AddProductPage />} />
 
           {/* Admin routes */}
           <Route 
