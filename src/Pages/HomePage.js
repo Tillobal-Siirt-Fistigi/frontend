@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -48,63 +48,34 @@ const products = [
   }
 ];
 
-const SimpleDialog = ({ isOpen, onClose, title, content }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
-          >
-            ×
-          </button>
-        </div>
-        <div className="text-gray-600">
-  {content.map((line, index) => (
-    <p key={index} className="mb-2">
-      {line.trim() === '' ? <br /> : line}
-    </p>
-  ))}
-</div>
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Hero = () => (
-  <div className="relative h-screen">
+  <div className="relative h-[calc(100vh-72px)] overflow-hidden">
+    {/* Background Image */}
     <div 
-      className="absolute inset-0 bg-cover bg-center"
+      className="absolute inset-0 bg-cover bg-center scale-105 transition-transform duration-500 hover:scale-110"
       style={{ backgroundImage: "url('/assets/images/background.png')" }}
     />
-    <div className="absolute inset-0 bg-black bg-opacity-30" />
-    <div className="relative h-full flex items-center justify-center">
-      <div className="bg-white bg-opacity-90 p-12 rounded-lg max-w-2xl mx-4 text-center">
-        <h1 className="text-4xl font-bold mb-4">PistachioHut</h1>
-        <p className="text-gray-700 mb-6">
-          From our fields to your door: pure, authentic pistachios. Always fresh, delivered everywhere.
+    
+    {/* Content Section */}
+    <div className="relative h-full flex items-center justify-center px-4">
+      <div className="bg-white/55 backdrop-blur-md px-16 py-20 rounded-2xl shadow-2xl max-w-4xl text-center">
+        <h1 className="text-6xl font-extrabold text-gray-900 tracking-tight mb-6">
+          Welcome to <span className="text-green-600">PistachioHut</span>
+        </h1>
+        <p className="text-xl text-gray-700 mb-8 leading-relaxed">
+          Taste the difference with our sustainably grown, hand-picked pistachios. Always fresh, always pure, delivered from our fields to your door.
         </p>
         <Link to="/products">
-          <button className="bg-green-500 text-white px-8 py-3 rounded-md hover:bg-green-600 transition-colors">
-            Check Our Pistachio Collection
+          <button className="bg-green-600 text-white px-12 py-4 rounded-lg font-bold shadow-md hover:shadow-lg hover:bg-green-700 transition-transform duration-300 transform hover:-translate-y-1">
+            Explore Products
           </button>
         </Link>
       </div>
     </div>
   </div>
 );
+
+
 
 const ProductCard = ({ id, name, price, image }) => (
   <Link to={`/product/${id}`} className="block">
@@ -131,40 +102,6 @@ const Products = () => (
 );
 
 const Feature = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  const learnMoreContent = {
-    title: 'Our Commitment to Quality',
-    content: [
-      `🌱 Eco-sustainable Practices:`,
-      `• Solar-powered processing facilities`,
-      `• Water conservation techniques`,
-      `• Minimal packaging waste`,
-      `• Composting and recycling programs`,
-      ``,
-      `🌿 Organic Certification:`,
-      `• No artificial pesticides or fertilizers`,
-      `• Non-GMO verified`,
-      `• Regular soil quality monitoring`,
-      `• Natural pest control methods`,
-      ``,
-      `🤝 Supporting Local Communities:`,
-      `• Fair wages for all workers`,
-      `• Educational programs for local farmers`,
-      `• Community development initiatives`,
-      `• Local employment opportunities`,
-      ``,
-      `🔍 Quality Control:`,
-      `• Hand-selected pistachios`,
-      `• Multiple quality check points`,
-      `• State-of-the-art processing`,
-      `• Rigorous food safety standards`,
-      ``,
-      `Join us in our mission to provide the best pistachios while protecting our environment and supporting our local communities.`,
-    ],
-  };
-  
-
   return (
     <section id="about" className="py-16 bg-white">
       <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
@@ -188,12 +125,11 @@ const Feature = () => {
               Supporting local businesses
             </li>
           </ul>
-          <button 
-            onClick={() => setIsDialogOpen(true)}
-            className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors"
-          >
-            Learn more
-          </button>
+          <Link to="/about">
+            <button className="bg-green-500 text-white px-6 py-3 rounded-md font-medium hover:bg-green-600 transition duration-300 transform hover:scale-105 focus:ring-4 focus:ring-green-300">
+              Learn more
+            </button>
+          </Link>
         </div>
         <div className="md:w-1/2">
           <img 
@@ -203,16 +139,10 @@ const Feature = () => {
           />
         </div>
       </div>
-
-      <SimpleDialog 
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        title={learnMoreContent.title}
-        content={learnMoreContent.content}
-      />
     </section>
   );
 };
+
 
 const TestimonialCard = ({ quote, author, rating, image }) => (
   <div className="bg-white p-6 rounded-lg shadow-sm">
