@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -18,6 +19,22 @@ const AuthLayout = ({ children }) => (
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/login', {
+        email,
+        password,
+      });
+      localStorage.setItem('accessToken', response.data.access_token);
+      navigate('/dashboard'); // Redirect to a dashboard or another page
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Login failed');
+    }
+  };
 
   return (
     <AuthLayout>
@@ -26,7 +43,8 @@ const LoginPage = () => {
           <h2 className="text-3xl font-semibold text-gray-900">Login</h2>
           <p className="mt-2 text-gray-600">to get started</p>
         </div>
-        <form className="space-y-4">
+        {error && <p className="text-red-500 text-center">{error}</p>}
+        <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <input
               type="email"
@@ -44,11 +62,6 @@ const LoginPage = () => {
               placeholder="Password"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
             />
-          </div>
-          <div className="text-right">
-            <Link to="/forgot-password" className="text-sm text-gray-600 hover:text-gray-800">
-              Forgot Password?
-            </Link>
           </div>
           <button
             type="submit"
@@ -74,6 +87,29 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreed, setAgreed] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    try {
+      console.log(email)
+      console.log(password)
+      await axios.post('http://localhost:5000/register', {
+        email,
+        password,
+      });
+      setSuccess('Registration successful! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000); // Redirect to login after 2 seconds
+    } catch (err) {
+      setError(err.response?.data?.msg || 'Signup failed');
+    }
+  };
 
   return (
     <AuthLayout>
@@ -82,7 +118,9 @@ const SignupPage = () => {
           <h2 className="text-3xl font-semibold text-gray-900">Signup</h2>
           <p className="mt-2 text-gray-600">to get started</p>
         </div>
-        <form className="space-y-4">
+        {error && <p className="text-red-500 text-center">{error}</p>}
+        {success && <p className="text-green-500 text-center">{success}</p>}
+        <form className="space-y-4" onSubmit={handleSignup}>
           <div>
             <input
               type="text"
@@ -127,7 +165,7 @@ const SignupPage = () => {
               className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
             />
             <label className="ml-2 block text-sm text-gray-600">
-              Agree to Our terms and Conditions
+              Agree to Our Terms and Conditions
             </label>
           </div>
           <button
