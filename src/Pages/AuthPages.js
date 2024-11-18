@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { AuthContext } from '../contexts/AuthContext'; // import AuthContext
+import api from '../utils/axiosInstance'; // import axios instance
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -20,17 +21,18 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const { login } = useContext(AuthContext); // Access login function from context
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000/login', {
-        email,
+      const response = await api.post('/login', {
+        identifier: email,
         password,
       });
-      localStorage.setItem('accessToken', response.data.access_token);
-      navigate('/dashboard'); // Redirect to a dashboard or another page
+      login(response.data.access_token); // Call login function after successful login
+      navigate('/'); // Redirect after successful login
     } catch (err) {
       setError(err.response?.data?.msg || 'Login failed');
     }
@@ -47,7 +49,7 @@ const LoginPage = () => {
         <form className="space-y-4" onSubmit={handleLogin}>
           <div>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
@@ -98,9 +100,8 @@ const SignupPage = () => {
       return;
     }
     try {
-      console.log(email)
-      console.log(password)
-      await axios.post('http://localhost:5000/register', {
+      await api.post('http://localhost:5000/register', {
+        username,
         email,
         password,
       });

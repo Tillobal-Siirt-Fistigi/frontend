@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ShoppingCart, Minus, Plus, Heart, Star, StarHalf } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axios from 'axios';
 
 // Product data (move to separate file later)
 const productsData = [
@@ -167,8 +168,7 @@ const CommentSection = () => {
             </label>
             <textarea
               value={newComment.comment}
-              onChange={(e) => setNewComment(prev => ({ ...prev, comment: e.target.value }))
-              }
+              onChange={(e) => setNewComment(prev => ({ ...prev, comment: e.target.value }))}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
               placeholder="Write your review here..."
@@ -191,6 +191,7 @@ const ProductDetailsPage = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
+  const [message, setMessage] = useState(""); // State for success/error messages
 
   useEffect(() => {
     const foundProduct = productsData.find(p => p.id === parseInt(id));
@@ -198,22 +199,55 @@ const ProductDetailsPage = () => {
   }, [id]);
 
   const handleQuantityChange = (delta) => {
-    setQuantity(prev => Math.max(1, prev + delta));
+    setQuantity((prev) => Math.max(1, prev + delta));
   };
 
-  // Add this new function
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
+    // Don't proceed if product is out of stock
     if (!product || product.stockCount < quantity) {
+      setMessage("This product is currently out of stock.");
       return;
     }
 
-    // Cart functionality will be implemented later
-    console.log('Adding to cart:', {
-      productId: product.id,
-      name: product.name,
-      price: product.price,
-      quantity: quantity
-    });
+    const token = localStorage.getItem('accessToken');  // Get the token from localStorage
+
+    if (!token) {
+      setMessage("You must be logged in to add products to your cart.");
+      return;
+    }
+
+    try {
+      // Step 1: Get the user's data (including email and user_id)
+      const userResponse = await axios.get("http://localhost:5000/user/data", {
+        headers: {
+          Authorization: `Bearer ${token}`  // Send token to backend to validate
+        }
+      });
+      // Step 2: Extract user ID and proceed with adding product to cart
+      const user_id = userResponse.data.email;
+      // Step 3: Send the user_id along with product details to add to the cart
+      const response = await axios.post(
+        "http://localhost:5000/cart/add",
+        {
+          user_id,  // User ID
+          product_id: product.id,  // Product ID
+          quantity,  // Product Quantity
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Attach the JWT token in the headers
+          },
+        }
+      );
+
+      // Handle success response
+      setMessage(response.data.msg); // Display success message
+    } catch (error) {
+      console.log(error);
+      // Handle error response
+      const errorMsg = error.response?.data?.msg || "An error occurred";
+      setMessage(errorMsg); // Display error message
+    }
   };
 
   if (!product) {
@@ -223,7 +257,6 @@ const ProductDetailsPage = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Image */}
@@ -238,10 +271,7 @@ const ProductDetailsPage = () => {
           {/* Product Details */}
           <div className="space-y-6">
             <h1 className="text-2xl font-medium text-gray-900">{product.name}</h1>
-            
-            <div className="text-xl font-semibold text-green-600">
-              ${product.price}
-            </div>
+            <div className="text-xl font-semibold text-green-600">${product.price}</div>
 
             {/* Quantity Selector */}
             <div className="space-y-2">
@@ -278,7 +308,7 @@ const ProductDetailsPage = () => {
                     : 'bg-gray-300 cursor-not-allowed text-gray-500'
                 }`}
                 disabled={product.stockCount === 0}
-                onClick={() => product.stockCount > 0 && handleAddToCart()}
+                onClick={handleAddToCart}
               >
                 <ShoppingCart size={20} />
                 <span>{product.stockCount > 0 ? 'Add to cart' : 'Out of Stock'}</span>
@@ -302,6 +332,19 @@ const ProductDetailsPage = () => {
               </div>
             )}
 
+            {/* Display Success/Error Message */}
+            {message && (
+              <div
+                className={`mt-4 p-3 rounded-md text-center ${
+                  message.toLowerCase().includes("error")
+                    ? "bg-red-50 text-red-700"
+                    : "bg-green-50 text-green-700"
+                }`}
+              >
+                {message}
+              </div>
+            )}
+
             {/* Free Shipping Banner */}
             <div className="bg-green-50 text-green-700 p-3 rounded-md flex items-center justify-center space-x-2">
               <span role="img" aria-label="truck">🚚</span>
@@ -311,9 +354,7 @@ const ProductDetailsPage = () => {
             {/* Description */}
             <div className="space-y-2">
               <h2 className="font-medium">Description:</h2>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {product.description}
-              </p>
+              <p className="text-gray-600 text-sm leading-relaxed">{product.description}</p>
             </div>
 
             {/* Specifications */}
@@ -331,7 +372,6 @@ const ProductDetailsPage = () => {
         </div>
         <CommentSection />
       </main>
-
       <Footer />
     </div>
   );
