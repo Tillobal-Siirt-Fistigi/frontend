@@ -1,21 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, ShoppingCart, Lock, CreditCard } from 'lucide-react';
-
-const Header = () => (
-  <header className="header">
-    <img src="/placeholder.svg?height=50&width=150" alt="PistachioHut Logo" className="logo" />
-    <nav className="nav">
-      <a href="#products" className="nav-link">Products</a>
-      <a href="#about" className="nav-link">About</a>
-      <a href="#contact" className="nav-link">Contact us</a>
-    </nav>
-    <div className="user-actions">
-      <User className="icon" />
-      <ShoppingCart className="icon" />
-    </div>
-  </header>
-);
+import { CreditCard } from 'lucide-react';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const OrderSummary = ({ orderDetails }) => (
   <div className="bg-gray-50 p-6 rounded-lg">
@@ -83,7 +70,6 @@ const PaymentPage = () => {
   };
 
   const handlePayNow = () => {
-    // Add any payment validation here if needed
     navigate('/thank-you');
   };
 
@@ -238,41 +224,7 @@ const PaymentPage = () => {
         </div>
       </main>
 
-      <footer className="footer">
-        <div className="footer-content">
-          <div className="footer-section">
-            <img src="/placeholder.svg?height=50&width=150" alt="PistachioHut Logo" className="footer-logo" />
-            <p>Your natural gift from Siirt</p>
-          </div>
-          <div className="footer-section">
-            <h3 className="footer-title">Products</h3>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">New arrivals</a></li>
-              <li><a href="#" className="footer-link">Best sellers</a></li>
-              <li><a href="#" className="footer-link">Sale</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3 className="footer-title">About</h3>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">Our story</a></li>
-              <li><a href="#" className="footer-link">Sustainability</a></li>
-              <li><a href="#" className="footer-link">Contact us</a></li>
-            </ul>
-          </div>
-          <div className="footer-section">
-            <h3 className="footer-title">Help</h3>
-            <ul className="footer-list">
-              <li><a href="#" className="footer-link">Shipping</a></li>
-              <li><a href="#" className="footer-link">Returns</a></li>
-              <li><a href="#" className="footer-link">FAQ</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <p>&copy; 2024 PistachioHut. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
