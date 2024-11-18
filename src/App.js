@@ -10,6 +10,8 @@ import ThankYouPage from './Pages/ThankYouPage';
 import { LoginPage, SignupPage } from './Pages/AuthPages';
 import About from './Pages/About';
 import Contact from './Pages/Contact';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminDashboard from './Pages/AdminDashboard';
 
 function App() {
   return (
@@ -26,6 +28,16 @@ function App() {
         <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignupPage />} />
+        
+        {/* Admin routes */}
+        <Route 
+          path="/admin/*" 
+          element={
+            <ProtectedRoute roles={['PRODUCT_MANAGER', 'SALES_MANAGER']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } 
+        />
       </Routes>
     </BrowserRouter>
   );
