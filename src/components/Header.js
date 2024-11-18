@@ -18,7 +18,11 @@ const SimpleDialog = ({ isOpen, onClose, title, content }) => {
           </button>
         </div>
         <div className="text-gray-600">
-          {content}
+          {content.split('\n').map((line, index) => (
+            <p key={index} className="mb-2">
+              {line.trim()}
+            </p>
+          ))}
         </div>
         <div className="mt-6 flex justify-end">
           <button
@@ -32,6 +36,7 @@ const SimpleDialog = ({ isOpen, onClose, title, content }) => {
     </div>
   );
 };
+
 
 const dialogContents = {
   about: {
