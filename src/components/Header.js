@@ -85,36 +85,26 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 h-[72px]">
-        <div className="container mx-auto px-4 h-full flex justify-between items-center">
-          <Link to="/">
-            <img src="/assets/images/pistachiohut_logo.png" alt="PistachioHut Logo" className="h-12" />
+    <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 h-[72px]">
+      <div className="container mx-auto px-4 h-full flex justify-between items-center">
+        <Link to="/">
+          <img src="/assets/images/pistachiohut_logo.png" alt="PistachioHut Logo" className="h-12" />
+        </Link>
+        <nav className="hidden md:flex space-x-8">
+          <Link to="/products" className="text-gray-700 hover:text-green-600">Products</Link>
+          <Link to="/about" className="text-gray-700 hover:text-green-600">About Us</Link>
+          <Link to="/contact" className="text-gray-700 hover:text-green-600">Contact</Link>
+        </nav>
+        <div className="flex space-x-4">
+          <Link to="/login">
+            <User className="w-6 h-6 text-gray-700" />
           </Link>
-          <nav className="hidden md:flex space-x-8">
-            <Link to="/products" className="text-gray-700 hover:text-green-600">Products</Link>
-            <button 
-              onClick={() => handleDialogOpen('about')}
-              className="text-gray-700 hover:text-green-600 bg-transparent border-none"
-            >
-              About
-            </button>
-            <button 
-              onClick={() => handleDialogOpen('contact')}
-              className="text-gray-700 hover:text-green-600 bg-transparent border-none"
-            >
-              Contact us
-            </button>
-          </nav>
-          <div className="flex space-x-4">
-            <Link to="/login">
-              <User className="w-6 h-6 text-gray-700" />
-            </Link>
-            <Link to="/cart">
-              <ShoppingCart className="w-6 h-6 text-gray-700" />
-            </Link>
-          </div>
+          <Link to="/cart">
+            <ShoppingCart className="w-6 h-6 text-gray-700" />
+          </Link>
         </div>
-      </header>
+      </div>
+    </header>
       {/* Add a spacer div that's the same height as the header */}
       <div className="h-[72px] w-full"></div>
       
