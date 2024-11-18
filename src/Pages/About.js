@@ -15,9 +15,11 @@ const About = () => {
               backgroundImage: "url('/assets/images/p1.jpg')",
             }}
           >
-            <div className="bg-black bg-opacity-50 p-8 rounded-lg text-center text-white max-w-3xl">
-              <h1 className="text-4xl font-bold mb-4">About PistachioHut</h1>
-              <p className="text-lg leading-relaxed">
+            <div className="bg-white/50 backdrop-blur-md px-16 py-12 rounded-2xl shadow-lg text-center max-w-3xl mx-auto">
+              <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
+                About <span className="text-green-600">PistachioHut</span>
+              </h1>
+              <p className="text-lg text-gray-700 leading-relaxed">
                 Discover our passion for pistachios, sustainability, and excellence.
               </p>
             </div>
@@ -25,9 +27,9 @@ const About = () => {
 
           {/* Content Section */}
           <div className="container mx-auto px-4 py-16">
-            {/* About Us Section */}
+            {/* Our Story Section */}
             <section className="mb-16">
-              <h2 className="text-3xl font-bold text-center mb-8 text-green-600">Our Story</h2>
+              <h2 className="text-4xl font-bold text-center mb-8 text-green-600">Our Story</h2>
               <p className="text-lg text-gray-700 leading-relaxed text-center max-w-4xl mx-auto">
                 At PistachioHut, we're dedicated to bringing you the finest pistachios from our carefully maintained orchards.
                 Our journey began with a simple mission: to provide the highest quality pistachios while maintaining sustainable
@@ -37,8 +39,8 @@ const About = () => {
 
             {/* Why Choose Us Section */}
             <section className="mb-16">
-              <h2 className="text-3xl font-bold text-center mb-8 text-green-600">Why Choose Us?</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <h2 className="text-4xl font-bold text-center mb-8 text-green-600">Why Choose Us?</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                 <ul className="list-disc pl-6 text-gray-700 text-lg leading-relaxed">
                   <li>
                     <strong>Unparalleled Quality:</strong> Our pistachios are carefully handpicked to ensure exceptional freshness
@@ -63,9 +65,9 @@ const About = () => {
                 </ul>
                 <div className="flex justify-center">
                   <img
-                    src="/assets/images/p2.jpg" 
+                    src="/assets/images/p2.jpg"
                     alt="Why Choose Us"
-                    className="rounded-lg shadow-lg"
+                    className="rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
                   />
                 </div>
               </div>
@@ -75,7 +77,7 @@ const About = () => {
             <section className="mb-16">
               <div className="flex flex-col md:flex-row items-center gap-12">
                 <div className="md:w-1/2">
-                  <h2 className="text-3xl font-bold mb-6 text-green-600">Our Commitment</h2>
+                  <h2 className="text-4xl font-bold mb-6 text-green-600">Our Commitment</h2>
                   <p className="text-lg text-gray-700 leading-relaxed">
                     Every package of PistachioHut pistachios represents our dedication to quality, sustainability,
                     and the rich agricultural heritage of our region. We take great care to ensure that our products are not only
@@ -86,13 +88,11 @@ const About = () => {
                   <img
                     src="/assets/images/p3.jpg"
                     alt="Commitment"
-                    className="rounded-lg shadow-lg"
+                    className="rounded-lg shadow-lg transition-transform duration-300 hover:scale-105"
                   />
                 </div>
               </div>
             </section>
-
-
           </div>
         </div>
       </main>
