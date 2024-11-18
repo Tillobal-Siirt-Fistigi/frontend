@@ -11,63 +11,56 @@ const productsData = [
     name: "Roasted Cracked Salted Pistachios",
     price: 12.99,
     image: "/assets/images/kavrulmus.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 95,
+    stockCount: 50
   },
   {
     id: 2,
     name: "(Not Roasted) Raw Pistachios",
     price: 11.99,
     image: "/assets/images/kavrulmamis.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 85,
+    stockCount: 0  // Out of stock
   },
   {
     id: 3,
     name: "Tree-Ripened Shelled Pistachios",
     price: 10.99,
     image: "/assets/images/kuru.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 90,
+    stockCount: 30
   },
   {
     id: 4,
     name: "Roasted Pistachio Kernels",
     price: 14.99,
     image: "/assets/images/ic.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 88,
+    stockCount: 20
   },
   {
     id: 5,
     name: "(Not Roasted) Raw Pistachio Kernels",
     price: 8.99,
     image: "/assets/images/ic2.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 82,
+    stockCount: 0  // Out of stock
   },
   {
     id: 6,
     name: "Chopped File Siirt Pistachio Kernels",
     price: 13.99,
     image: "/assets/images/kesik.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 78,
+    stockCount: 15
   },
   {
     id: 7,
     name: "Pistachio flour",
     price: 7.99,
     image: "/assets/images/toz.png",
-    description: "All organic, ethically sourced pistachios collected for you and for your loved ones. Our premium pistachios are carefully selected from the finest orchards, ensuring exceptional quality and taste.",
-    dimensions: "20cm x 25cm",
-    weight: "100g"
+    popularity: 75,
+    stockCount: 40
   }
 ];
 
@@ -208,6 +201,21 @@ const ProductDetailsPage = () => {
     setQuantity(prev => Math.max(1, prev + delta));
   };
 
+  // Add this new function
+  const handleAddToCart = () => {
+    if (!product || product.stockCount < quantity) {
+      return;
+    }
+
+    // Cart functionality will be implemented later
+    console.log('Adding to cart:', {
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      quantity: quantity
+    });
+  };
+
   if (!product) {
     return <div>Loading...</div>;
   }
@@ -263,9 +271,17 @@ const ProductDetailsPage = () => {
             {/* Action Buttons */}
             <div className="flex gap-4">
               {/* Add to Cart Button */}
-              <button className="flex-1 bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition-colors flex items-center justify-center space-x-2">
+              <button 
+                className={`flex-1 py-3 px-4 rounded-md transition-colors flex items-center justify-center space-x-2 ${
+                  product.stockCount > 0 
+                    ? 'bg-green-500 hover:bg-green-600 text-white' 
+                    : 'bg-gray-300 cursor-not-allowed text-gray-500'
+                }`}
+                disabled={product.stockCount === 0}
+                onClick={() => product.stockCount > 0 && handleAddToCart()}
+              >
                 <ShoppingCart size={20} />
-                <span>Add to cart</span>
+                <span>{product.stockCount > 0 ? 'Add to cart' : 'Out of Stock'}</span>
               </button>
 
               {/* Add to Wishlist Button */}
@@ -274,6 +290,17 @@ const ProductDetailsPage = () => {
                 <span>Wishlist</span>
               </button>
             </div>
+
+            {/* Add Stock Status */}
+            {product.stockCount > 0 ? (
+              <div className="text-sm text-gray-600">
+                {product.stockCount} items in stock
+              </div>
+            ) : (
+              <div className="text-sm text-red-500 font-medium">
+                Currently out of stock
+              </div>
+            )}
 
             {/* Free Shipping Banner */}
             <div className="bg-green-50 text-green-700 p-3 rounded-md flex items-center justify-center space-x-2">

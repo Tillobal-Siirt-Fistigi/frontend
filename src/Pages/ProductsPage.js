@@ -4,7 +4,7 @@ import { Search, SortAsc } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const ProductCard = ({ id, name, price, image }) => {
+const ProductCard = ({ id, name, price, image, stockCount }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -13,7 +13,7 @@ const ProductCard = ({ id, name, price, image }) => {
 
   return (
     <div 
-      className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
+      className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer relative"
       onClick={handleClick}
     >
       <div className="aspect-square overflow-hidden">
@@ -27,6 +27,11 @@ const ProductCard = ({ id, name, price, image }) => {
         <h3 className="text-sm font-medium text-gray-900">{name}</h3>
         <p className="mt-1 text-lg font-semibold text-green-600">${price}</p>
       </div>
+      {stockCount === 0 && (
+        <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-xs">
+          Out of Stock
+        </div>
+      )}
     </div>
   );
 };
@@ -41,49 +46,56 @@ const ProductsPage = () => {
       name: "Roasted Cracked Salted Pistachios",
       price: 12.99,
       image: "/assets/images/kavrulmus.png",
-      popularity: 95
+      popularity: 95,
+      stockCount: 50
     },
     {
       id: 2,
       name: "(Not Roasted) Raw Pistachios",
       price: 11.99,
       image: "/assets/images/kavrulmamis.png",
-      popularity: 85
+      popularity: 85,
+      stockCount: 0  // Out of stock
     },
     {
       id: 3,
       name: "Tree-Ripened Shelled Pistachios",
       price: 10.99,
       image: "/assets/images/kuru.png",
-      popularity: 90
+      popularity: 90,
+      stockCount: 30
     },
     {
       id: 4,
       name: "Roasted Pistachio Kernels",
       price: 14.99,
       image: "/assets/images/ic.png",
-      popularity: 88
+      popularity: 88,
+      stockCount: 20
     },
     {
       id: 5,
       name: "(Not Roasted) Raw Pistachio Kernels",
       price: 8.99,
       image: "/assets/images/ic2.png",
-      popularity: 82
+      popularity: 82,
+      stockCount: 0  // Out of stock
     },
     {
       id: 6,
       name: "Chopped File Siirt Pistachio Kernels",
       price: 13.99,
       image: "/assets/images/kesik.png",
-      popularity: 78
+      popularity: 78,
+      stockCount: 15
     },
     {
       id: 7,
       name: "Pistachio flour",
       price: 7.99,
       image: "/assets/images/toz.png",
-      popularity: 75
+      popularity: 75,
+      stockCount: 40
     }
   ];
 
@@ -150,6 +162,7 @@ const ProductsPage = () => {
               name={product.name}
               price={product.price}
               image={product.image}
+              stockCount={product.stockCount}
             />
           ))}
         </div>
