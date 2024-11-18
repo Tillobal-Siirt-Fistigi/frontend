@@ -50,8 +50,8 @@ const ProductsPage = () => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('http://localhost:5000/products/all');  // Fetch products from backend
-        console.log(response.data)
         setProducts(response.data);  // Set fetched products to state
+        localStorage.setItem('products', JSON.stringify(response.data));
       } catch (err) {
         setError('Failed to load products');
       } finally {

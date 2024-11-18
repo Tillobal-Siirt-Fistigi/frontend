@@ -6,66 +6,6 @@ import Footer from '../components/Footer';
 import axios from 'axios';
 import { AuthContext } from '../contexts/AuthContext';
 
-
-const productsData = [
-  {
-    id: 1,
-    name: "Roasted Cracked Salted Pistachios",
-    price: 12.99,
-    image: "/assets/images/kavrulmus.png",
-    popularity: 95,
-    stockCount: 50
-  },
-  {
-    id: 2,
-    name: "(Not Roasted) Raw Pistachios",
-    price: 11.99,
-    image: "/assets/images/kavrulmamis.png",
-    popularity: 85,
-    stockCount: 0  // Out of stock
-  },
-  {
-    id: 3,
-    name: "Tree-Ripened Shelled Pistachios",
-    price: 10.99,
-    image: "/assets/images/kuru.png",
-    popularity: 90,
-    stockCount: 30
-  },
-  {
-    id: 4,
-    name: "Roasted Pistachio Kernels",
-    price: 14.99,
-    image: "/assets/images/ic.png",
-    popularity: 88,
-    stockCount: 20
-  },
-  {
-    id: 5,
-    name: "(Not Roasted) Raw Pistachio Kernels",
-    price: 8.99,
-    image: "/assets/images/ic2.png",
-    popularity: 82,
-    stockCount: 0  // Out of stock
-  },
-  {
-    id: 6,
-    name: "Chopped File Siirt Pistachio Kernels",
-    price: 13.99,
-    image: "/assets/images/kesik.png",
-    popularity: 78,
-    stockCount: 15
-  },
-  {
-    id: 7,
-    name: "Pistachio flour",
-    price: 7.99,
-    image: "/assets/images/toz.png",
-    popularity: 75,
-    stockCount: 40
-  }
-];
-
 const staticComments = [
   {
     id: 1,
@@ -107,18 +47,60 @@ const StarRating = ({ rating }) => {
 
 // Comment Section Component
 const CommentSection = ({ productId }) => {
-  const [newComment, setNewComment] = useState({
-    rating: 5,
-    comment: ''
-  });
-  const [comments, setComments] = useState(staticComments); // Temporarily use static comments
+  const [comments, setComments] = useState([]); // Store dynamic comments
+  const [newComment, setNewComment] = useState({ rating: 5, comment: '' });
   const [message, setMessage] = useState('');
+
+  const fetchComments = async () => {
+    try {
+      // Fetch approved reviews for the product
+      const response = await axios.get(`http://localhost:5000/reviews/${productId}`);
+      const reviews = response.data.reviews;
+
+      // Map through reviews and fetch usernames for each user_id
+      const commentsWithUsernames = await Promise.all(
+        reviews.map(async (review) => {
+          console.log(review)
+          try {
+            const usernameResponse = await axios.get(
+              `http://localhost:5000/user/username/${review.user_id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                },
+              }
+            );
+            console.log(usernameResponse)
+            return {
+              id: review.timestamp, // Unique timestamp as ID
+              name: usernameResponse.data[0].username, // Username from backend
+              rating: review.rating,
+              date: new Date(review.timestamp).toLocaleDateString(),
+              comment: review.review_text,
+            };
+          } catch (err) {
+            console.error(`Failed to fetch username for ${review.user_id}`, err);
+            return null; // Skip invalid or failed requests
+          }
+        })
+      );
+
+      // Filter out any null results from failed requests
+      setComments(commentsWithUsernames.filter((comment) => comment !== null));
+    } catch (err) {
+      setMessage('Failed to load comments');
+    }
+  };
+
+  useEffect(() => {
+    fetchComments(); // Fetch comments on component mount
+  }, [productId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('accessToken');
     if (!token) {
-      setMessage("You must be logged in to submit a review.");
+      setMessage('You must be logged in to submit a review.');
       return;
     }
 
@@ -137,12 +119,10 @@ const CommentSection = ({ productId }) => {
         }
       );
       setMessage(response.data.msg);
-      // Reset form after submission
-      setNewComment({ rating: 5, comment: '' });
-      // Add the new comment to the list of comments
-      setComments([...comments, { ...newComment, name: 'You', date: new Date().toLocaleDateString() }]);
+      setNewComment({ rating: 5, comment: '' }); // Reset form
+      fetchComments(); // Refresh comments after submission
     } catch (error) {
-      const errorMsg = error.response?.data?.msg || "An error occurred while submitting your review.";
+      const errorMsg = error.response?.data?.msg || 'An error occurred while submitting your review.';
       setMessage(errorMsg);
     }
   };
@@ -153,14 +133,14 @@ const CommentSection = ({ productId }) => {
 
       {/* Comments List */}
       <div className="space-y-6">
-        {comments.map((comment) => (
-          <div key={comment.id} className="border-b border-gray-200 pb-6">
+        {comments.map((comment, index) => (
+          <div key={index} className="border-b border-gray-200 pb-6">
             <div className="flex items-center justify-between mb-2">
               <div>
                 <p className="font-medium">{comment.name}</p>
                 <StarRating rating={comment.rating} />
               </div>
-              <span className="text-sm text-gray-500">{new Date(comment.date).toLocaleDateString()}</span>
+              <span className="text-sm text-gray-500">{comment.date}</span>
             </div>
             <p className="text-gray-600 mt-2">{comment.comment}</p>
           </div>
@@ -178,12 +158,12 @@ const CommentSection = ({ productId }) => {
                 <button
                   key={star}
                   type="button"
-                  onClick={() => setNewComment(prev => ({ ...prev, rating: star }))}
+                  onClick={() => setNewComment((prev) => ({ ...prev, rating: star }))}
                   className="focus:outline-none"
                 >
                   <Star
                     size={24}
-                    className={star <= newComment.rating ? "text-green-500 fill-current" : "text-gray-300"}
+                    className={star <= newComment.rating ? 'text-green-500 fill-current' : 'text-gray-300'}
                   />
                 </button>
               ))}
@@ -193,7 +173,7 @@ const CommentSection = ({ productId }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">Your Review</label>
             <textarea
               value={newComment.comment}
-              onChange={(e) => setNewComment(prev => ({ ...prev, comment: e.target.value }))}
+              onChange={(e) => setNewComment((prev) => ({ ...prev, comment: e.target.value }))}
               rows={4}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
               placeholder="Write your review here..."
@@ -210,9 +190,7 @@ const CommentSection = ({ productId }) => {
       </form>
 
       {/* Display message */}
-      {message && (
-        <div className="mt-4 p-3 text-center text-white bg-green-500 rounded-md">{message}</div>
-      )}
+      {message && <div className="mt-4 p-3 text-center text-white bg-green-500 rounded-md">{message}</div>}
     </div>
   );
 };
@@ -227,16 +205,37 @@ const ProductDetailsPage = () => {
   const [reviewText, setReviewText] = useState(""); // Review text state
 
   useEffect(() => {
-    const foundProduct = productsData.find(p => p.id === parseInt(id));
-    setProduct(foundProduct);
+    // Check if the product exists in localStorage
+    const storedProducts = localStorage.getItem('products');
+    if (storedProducts) {
+      const products = JSON.parse(storedProducts);
+      console.log(products)
+      const foundProduct = products.find((p) => p.id === id);
+      if (foundProduct) {
+        setProduct(foundProduct);
+      } else {
+        fetchProductFromBackend();
+      }
+    } else {
+      fetchProductFromBackend();
+    }
   }, [id]);
+
+  const fetchProductFromBackend = async () => {
+    try {
+      console.log(id)
+      const response = await axios.get(`http://localhost:5000/products/${id}`);
+      setProduct(response.data);
+    } catch (error) {
+      setMessage("Failed to load product details.");
+    }
+  };
 
   const handleQuantityChange = (delta) => {
     setQuantity((prev) => Math.max(1, prev + delta));
   };
 
   const handleAddToCart = async () => {
-    // Don't proceed if product is out of stock
     if (!product || product.stockCount < quantity) {
       setMessage("This product is currently out of stock.");
       return;
@@ -265,11 +264,8 @@ const ProductDetailsPage = () => {
         }
       );
 
-      // Handle success response
       setMessage(response.data.msg); // Display success message
     } catch (error) {
-      console.log(error);
-      // Handle error response
       const errorMsg = error.response?.data?.msg || "An error occurred";
       setMessage(errorMsg); // Display error message
     }
@@ -327,6 +323,7 @@ const ProductDetailsPage = () => {
 
     try {
       const user_id = user.email; // Assuming user.email is the user ID
+      console.log(product)
       const response = await axios.post(
         "http://localhost:5000/reviews/post", 
         {
@@ -475,74 +472,7 @@ const ProductDetailsPage = () => {
           </div>
         </div>
 
-        {/* Comment Section */}
-        <div className="mt-12 space-y-8">
-          <h2 className="text-xl font-medium">Customer Reviews</h2>
-
-          {/* Comments List */}
-          <div className="space-y-6">
-            {staticComments.map((comment) => (
-              <div key={comment.id} className="border-b border-gray-200 pb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <p className="font-medium">{comment.name}</p>
-                    <StarRating rating={comment.rating} />
-                  </div>
-                  <span className="text-sm text-gray-500">
-                    {new Date(comment.date).toLocaleDateString()}
-                  </span>
-                </div>
-                <p className="text-gray-600 mt-2">{comment.comment}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* New Comment Form */}
-          <form onSubmit={handleSubmitReview} className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-medium mb-4">Write a Review</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Rating
-                </label>
-                <div className="flex items-center space-x-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setRating(star)}
-                      className="focus:outline-none"
-                    >
-                      <Star
-                        size={24}
-                        className={star <= rating ? "text-green-500 fill-current" : "text-gray-300"}
-                      />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Your Review
-                </label>
-                <textarea
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                  rows={4}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                  placeholder="Write your review here..."
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
-              >
-                Submit Review
-              </button>
-            </div>
-          </form>
-        </div>
+        <CommentSection productId={id} />
       </main>
       <Footer />
     </div>

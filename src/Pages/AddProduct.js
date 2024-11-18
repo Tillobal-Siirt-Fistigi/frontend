@@ -4,96 +4,91 @@ import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { storage } from '../firebase'; 
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Correct imports for Firebase v9
 
 const AddProductPage = () => {
-  const [productData, setProductData] = useState({
-    name: '',
-    model: '',
-    serial_number: '',
-    description: '',
-    quantity_in_stock: '',
-    price: '',
-    warranty_status: '',
-    distributor_info: '',
-    image_link: '',
-    dimensions: '',
-    weight: '',
-    popularity: 0,
-  });
+    const [productData, setProductData] = useState({
+      name: '',
+      model: '',
+      serial_number: '',
+      description: '',
+      quantity_in_stock: '',
+      price: '',
+      warranty_status: '',
+      distributor_info: '',
+      image_link: '',
+      dimensions: '',
+      weight: '',
+      popularity: 0,
+    });
   
-  const [imageFile, setImageFile] = useState(null); // To store selected image file
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setProductData((prevData) => ({
-      ...prevData,
-      [name]: value
-    }));
-  };
-
-  const handleImageChange = (e) => {
-    setImageFile(e.target.files[0]);  // Set the image file selected by the user
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // If there is an image, upload it to Firebase Storage
-    if (imageFile) {
-      const uploadTask = storage.ref(`product_images/${imageFile.name}`).put(imageFile);
-
-      uploadTask.on(
-        'state_changed',
-        snapshot => {},
-        error => {
-          setError('Image upload failed');
-        },
-        async () => {
-          const imageUrl = await storage
-            .ref('product_images')
-            .child(imageFile.name)
-            .getDownloadURL();
-
-          // Once the image is uploaded, add the image URL to the product data
-          setProductData((prevData) => ({
-            ...prevData,
-            image_link: imageUrl,
-          }));
-
-          // Submit product data including the image link to the backend
-          try {
-            const response = await axios.post('http://localhost:5000/products/add', productData, {
+    const [imageFile, setImageFile] = useState(null); // To store selected image file
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const navigate = useNavigate();
+  
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setProductData((prevData) => ({
+        ...prevData,
+        [name]: value
+      }));
+    };
+  
+    const handleImageChange = (e) => {
+      setImageFile(e.target.files[0]);  // Set the image file selected by the user
+    };
+  
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+        console.log(imageFile)
+      // If there is an image, upload it to Firebase Storage
+      if (imageFile) {
+        const storageRef = ref(storage, `product_images/${imageFile.name}`); // Create reference
+        const uploadTask = uploadBytes(storageRef, imageFile); // Upload the file
+  
+        uploadTask.then(() => {
+          // Get download URL after upload completes
+          getDownloadURL(storageRef).then((imageUrl) => {
+            // Once the image is uploaded, add the image URL to the product data
+            setProductData((prevData) => ({
+              ...prevData,
+              image_link: imageUrl,
+            }));
+  
+            // Submit product data including the image link to the backend
+            axios.post('http://localhost:5000/products/add', productData, {
               headers: {
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
               }
+            })
+            .then(response => {
+              setSuccess(response.data.msg);
+              setTimeout(() => navigate('/'), 2000); // Redirect after success
+            })
+            .catch(err => {
+              setError(err.response?.data?.msg || 'Failed to add product');
             });
-
-            setSuccess(response.data.msg);
-            setTimeout(() => navigate('/'), 2000); // Redirect after success
-          } catch (err) {
-            setError(err.response?.data?.msg || 'Failed to add product');
-          }
-        }
-      );
-    } else {
-      // If no image is selected, just send the product data
-      try {
-        const response = await axios.post('http://localhost:5000/products/add', productData, {
+          });
+        }).catch(error => {
+          setError('Image upload failed');
+        });
+      } else {
+        // If no image is selected, just send the product data without the image link
+        axios.post('http://localhost:5000/products/add', productData, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
           }
+        })
+        .then(response => {
+          setSuccess(response.data.msg);
+          setTimeout(() => navigate('/'), 2000); // Redirect after success
+        })
+        .catch(err => {
+          setError(err.response?.data?.msg || 'Failed to add product');
         });
-
-        setSuccess(response.data.msg);
-        setTimeout(() => navigate('/'), 2000); // Redirect after success
-      } catch (err) {
-        setError(err.response?.data?.msg || 'Failed to add product');
       }
-    }
-  };
+    };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -242,7 +237,9 @@ const AddProductPage = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-md text-lg"
               />
             </div>
-
+            {
+                
+            }
             {/* Image Upload */}
             <div>
               <input
