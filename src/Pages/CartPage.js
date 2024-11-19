@@ -68,7 +68,7 @@ const CartPage = () => {
         const token = localStorage.getItem('accessToken'); // Get the token from localStorage
         if (!token) throw new Error("User not authenticated");
 
-        const response = await axios.get("http://localhost:5000/cart", {
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL + "/cart", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -97,7 +97,7 @@ const CartPage = () => {
   
       // Send request to update the quantity in the cart
       await axios.patch(
-        `http://localhost:5000/cart/update/${productId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/cart/update/${productId}`,
         { quantity: newQuantity },
         {
           headers: {
@@ -118,7 +118,7 @@ const CartPage = () => {
   const handleRemoveItem = async (productId) => {
     try {
       const token = localStorage.getItem('accessToken');
-      await axios.delete(`http://localhost:5000/cart/remove/${productId}`, {
+      await axios.delete(`${process.env.REACT_APP_BACKEND_URL}/cart/remove/${productId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

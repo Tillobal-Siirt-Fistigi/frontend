@@ -28,7 +28,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('https://online-store-backend-hhy9.onrender.com/login', {
+      const response = await axios.post(process.env.REACT_APP_BACKEND_URL + '/login', {
         identifier: email,
         password,
       });

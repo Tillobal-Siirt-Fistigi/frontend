@@ -30,7 +30,7 @@ const CommentSection = ({ productId }) => {
   const fetchComments = async () => {
     try {
       // Fetch approved reviews for the product
-      const response = await axios.get(`http://localhost:5000/reviews/${productId}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/reviews/${productId}`);
       const reviews = response.data.reviews;
 
       // Map through reviews and fetch usernames for each user_id
@@ -39,7 +39,7 @@ const CommentSection = ({ productId }) => {
           console.log(review)
           try {
             const usernameResponse = await axios.get(
-              `http://localhost:5000/user/username/${review.user_id}`,
+              `${process.env.REACT_APP_BACKEND_URL}/user/username/${review.user_id}`,
               {
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
@@ -82,7 +82,7 @@ const CommentSection = ({ productId }) => {
 
     try {
       const response = await axios.post(
-        process.env.REACT_APP_BACKEND_URL + '/reviews/post',
+        `${process.env.REACT_APP_BACKEND_URL}/reviews/post`,
         {
           product_id: productId,
           rating: newComment.rating,
@@ -200,7 +200,7 @@ const ProductDetailsPage = () => {
   const fetchProductFromBackend = async () => {
     try {
       console.log(id)
-      const response = await axios.get(`http://localhost:5000/products/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/products/${id}`);
       setProduct(response.data);
     } catch (error) {
       setMessage("Failed to load product details.");
@@ -227,7 +227,7 @@ const ProductDetailsPage = () => {
     try {
       const user_id = user.email;
       const response = await axios.post(
-        "http://localhost:5000/cart/add",
+        `${process.env.REACT_APP_BACKEND_URL}/cart/add`,
         {
           user_id,  // User ID
           product_id: product.id,  // Product ID
@@ -263,7 +263,7 @@ const ProductDetailsPage = () => {
     try {
       const user_id = user.email; // Assuming user.email is the user ID
       const response = await axios.post(
-        "http://localhost:5000/wishlist/add", 
+        `${process.env.REACT_APP_BACKEND_URL}/wishlist/add`,
         {
           user_id,  // User ID
           product_id: product.id,  // Product ID
@@ -301,7 +301,7 @@ const ProductDetailsPage = () => {
       const user_id = user.email; // Assuming user.email is the user ID
       console.log(product)
       const response = await axios.post(
-        "http://localhost:5000/reviews/post", 
+        `${process.env.REACT_APP_BACKEND_URL}/reviews/post`, 
         {
           user_id,  // User ID
           product_id: product.id,  // Product ID

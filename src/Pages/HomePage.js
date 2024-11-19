@@ -1,52 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-
-const products = [
-  {
-    id: 1,
-    name: "Roasted Cracked Salted Pistachios",
-    price: 12.99,
-    image: "/assets/images/kavrulmus.png"
-  },
-  {
-    id: 2,
-    name: "(Not Roasted) Raw Pistachios",
-    price: 11.99,
-    image: "/assets/images/kavrulmamis.png"
-  },
-  {
-    id: 3,
-    name: "Tree-Ripened Shelled Pistachios",
-    price: 10.99,
-    image: "/assets/images/kuru.png"
-  },
-  {
-    id: 4,
-    name: "Roasted Pistachio Kernels",
-    price: 14.99,
-    image: "/assets/images/ic.png"
-  },
-  {
-    id: 5,
-    name: "(Not Roasted) Raw Pistachio Kernels",
-    price: 8.99,
-    image: "/assets/images/ic2.png"
-  },
-  {
-    id: 6,
-    name: "Chopped File Siirt Pistachio Kernels",
-    price: 13.99,
-    image: "/assets/images/kesik.png"
-  },
-  {
-    id: 7,
-    name: "Pistachio flour",
-    price: 7.99,
-    image: "/assets/images/toz.png"
-  }
-];
 
 const Hero = () => (
   <div className="relative h-[calc(100vh-72px)] overflow-hidden">
@@ -75,31 +31,101 @@ const Hero = () => (
   </div>
 );
 
+const ProductCard = ({ id, name, price, image }) => {
+  const navigate = useNavigate();
 
+  const handleClick = () => {
+    navigate(`/product/${id}`);
+  };
 
-const ProductCard = ({ id, name, price, image }) => (
-  <Link to={`/product/${id}`} className="block">
-    <div className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+  // Convert price to number before using toFixed()
+  const formattedPrice = Number(price).toFixed(2);
+
+  return (
+    <div 
+      onClick={handleClick}
+      className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+    >
       <img src={image} alt={name} className="w-full h-48 object-cover rounded-md mb-4" />
       <h3 className="text-lg font-medium text-gray-800 mb-2">{name}</h3>
-      <p className="text-green-600 font-bold">${price.toFixed(2)}</p>
+      <p className="text-green-600 font-bold">${formattedPrice}</p>
     </div>
-  </Link>
-);
+  );
+};
 
-const Products = () => (
-  <section id="products" className="py-16 bg-gray-50">
-    <div className="container mx-auto px-4">
-      <h2 className="text-3xl font-bold text-center mb-4">Products</h2>
-      <p className="text-center text-gray-600 mb-12">Order it for you or for your beloved ones</p>
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
-        {products.map(product => (
-          <ProductCard key={product.id} {...product} />
-        ))}
+const Products = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/products/all`);
+        setProducts(response.data);
+        setError(null);
+      } catch (error) {
+        console.error('Failed to fetch products:', error);
+        setError('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center items-center min-h-[200px]">
+            <div className="w-12 h-12 border-4 border-green-500 border-dotted rounded-full animate-spin"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <p className="text-center text-red-500">{error}</p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section id="products" className="py-16 bg-gray-50">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center mb-4">Products</h2>
+        <p className="text-center text-gray-600 mb-12">Order it for you or for your beloved ones</p>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          {products.map(product => (
+            <ProductCard 
+              key={product.id} 
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              image={product.image_link}
+            />
+          ))}
+        </div>
+        <div className="text-center mt-8">
+          <Link 
+            to="/products"
+            className="inline-block bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 transition-colors"
+          >
+            View All Products
+          </Link>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 const Feature = () => {
   return (
@@ -142,7 +168,6 @@ const Feature = () => {
     </section>
   );
 };
-
 
 const TestimonialCard = ({ quote, author, rating, image }) => (
   <div className="bg-white p-6 rounded-lg shadow-sm">
@@ -191,8 +216,21 @@ const Testimonials = () => (
 );
 
 const PopularProducts = () => {
-  const popularProducts = products.slice(0, 4);
+  const [popularProducts, setPopularProducts] = useState([]);
   
+  useEffect(() => {
+    const fetchPopularProducts = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/products/all`);
+        setPopularProducts(response.data.slice(0, 4));
+      } catch (error) {
+        console.error('Failed to fetch popular products:', error);
+      }
+    };
+    
+    fetchPopularProducts();
+  }, []);
+
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
@@ -200,7 +238,13 @@ const PopularProducts = () => {
         <p className="text-center text-gray-600 mb-12">Our top-selling products that you may like</p>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {popularProducts.map(product => (
-            <ProductCard key={product.id} {...product} />
+            <ProductCard 
+              key={product.id}
+              id={product.id}
+              name={product.name}
+              price={product.price}
+              image={product.image_link}
+            />
           ))}
         </div>
       </div>
