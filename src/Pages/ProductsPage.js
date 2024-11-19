@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Search, SortAsc } from 'lucide-react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import { AuthContext } from '../contexts/AuthContext';
 
+const AnimatedLoadingScreen = () => {
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="w-16 h-16 border-4 border-green-500 border-dotted rounded-full animate-spin"></div>
+      <p className="ml-4 text-lg text-green-700 font-semibold">Loading products...</p>
+    </div>
+  );
+};
+
 const ProductCard = ({ id, name, price, image, stockCount }) => {
   const navigate = useNavigate();
 
+  console.log(image)
   const handleClick = () => {
     navigate(`/product/${id}`);
   };
@@ -38,19 +48,21 @@ const ProductCard = ({ id, name, price, image, stockCount }) => {
   );
 };
 
+
 const ProductsPage = () => {
   const { user, isAuthenticated } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortOption, setSortOption] = useState('recommended');
-  const [products, setProducts] = useState([]);  // Holds the products data from the API
-  const [loading, setLoading] = useState(true);  // To handle loading state
-  const [error, setError] = useState('');  // To handle any error that occurs during the fetch
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/products/all');  // Fetch products from backend
-        setProducts(response.data);  // Set fetched products to state
+        const response = await axios.get('http://localhost:5000/products/all');
+        console.log(response.data); // Debugging: Check this output
+        setProducts(response.data);
         localStorage.setItem('products', JSON.stringify(response.data));
       } catch (err) {
         setError('Failed to load products');
@@ -58,9 +70,10 @@ const ProductsPage = () => {
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
   }, []);
+  
 
   const filteredAndSortedProducts = products
     .filter(product =>
@@ -74,13 +87,13 @@ const ProductsPage = () => {
           return b.price - a.price;
         case 'popularity':
           return b.popularity - a.popularity;
-        default: // 'recommended'
+        default:
           return b.popularity - a.popularity;
       }
     });
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <AnimatedLoadingScreen />;
   }
 
   if (error) {
@@ -95,7 +108,6 @@ const ProductsPage = () => {
         <h1 className="text-2xl font-medium text-gray-900 text-center mb-8">All Products</h1>
 
         <div className="mb-8 flex flex-col sm:flex-row gap-4 items-center">
-          {/* Search Bar */}
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
@@ -107,7 +119,6 @@ const ProductsPage = () => {
             />
           </div>
 
-          {/* Sort Dropdown */}
           <div className="flex items-center gap-2">
             <SortAsc size={20} className="text-gray-500" />
             <select
@@ -130,7 +141,7 @@ const ProductsPage = () => {
               id={product.id}
               name={product.name}
               price={product.price}
-              image={product.image}
+              image={product.image_link}
               stockCount={product.stockCount}
             />
           ))}

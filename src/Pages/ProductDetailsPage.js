@@ -6,30 +6,6 @@ import Footer from '../components/Footer';
 import axios from 'axios';
 import { AuthContext } from '../contexts/AuthContext';
 
-const staticComments = [
-  {
-    id: 1,
-    name: "John Smith",
-    rating: 5,
-    date: "2024-03-15",
-    comment: "These pistachios are amazing! Very fresh and tasty."
-  },
-  {
-    id: 2,
-    name: "Maria Garcia",
-    rating: 4,
-    date: "2024-03-10",
-    comment: "Good quality product, fast shipping. Will buy again."
-  },
-  {
-    id: 3,
-    name: "Alex Johnson",
-    rating: 5,
-    date: "2024-03-05",
-    comment: "Best pistachios I've ever had. The roasting is perfect!"
-  }
-];
-
 // StarRating component for displaying ratings
 const StarRating = ({ rating }) => {
   const stars = [];
@@ -236,7 +212,7 @@ const ProductDetailsPage = () => {
   };
 
   const handleAddToCart = async () => {
-    if (!product || product.stockCount < quantity) {
+    if (!product || product.quantity_in_stock < quantity) {
       setMessage("This product is currently out of stock.");
       return;
     }
@@ -360,7 +336,7 @@ const ProductDetailsPage = () => {
           {/* Product Image */}
           <div className="aspect-square rounded-lg overflow-hidden bg-white">
             <img 
-              src={product.image} 
+              src={product.image_link} 
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -401,15 +377,15 @@ const ProductDetailsPage = () => {
               {/* Add to Cart Button */}
               <button 
                 className={`flex-1 py-3 px-4 rounded-md transition-colors flex items-center justify-center space-x-2 ${
-                  product.stockCount > 0 
+                  product.quantity_in_stock > 0 
                     ? 'bg-green-500 hover:bg-green-600 text-white' 
                     : 'bg-gray-300 cursor-not-allowed text-gray-500'
                 }`}
-                disabled={product.stockCount === 0}
+                disabled={product.quantity_in_stock === 0}
                 onClick={handleAddToCart}
               >
                 <ShoppingCart size={20} />
-                <span>{product.stockCount > 0 ? 'Add to cart' : 'Out of Stock'}</span>
+                <span>{product.quantity_in_stock > 0 ? 'Add to cart' : 'Out of Stock'}</span>
               </button>
 
               {/* Add to Wishlist Button */}
@@ -423,9 +399,9 @@ const ProductDetailsPage = () => {
             </div>
 
             {/* Add Stock Status */}
-            {product.stockCount > 0 ? (
+            {product.quantity_in_stock > 0 ? (
               <div className="text-sm text-gray-600">
-                {product.stockCount} items in stock
+                {product.quantity_in_stock} items in stock
               </div>
             ) : (
               <div className="text-sm text-red-500 font-medium">

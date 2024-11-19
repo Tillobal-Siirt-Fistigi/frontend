@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Minus, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import axios from 'axios';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   return (
@@ -10,14 +11,14 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       <td className="py-4">
         <div className="flex items-center space-x-4">
           <img 
-            src={item.image} 
+            src={item.image_link} 
             alt={item.name} 
             className="w-16 h-16 object-cover rounded-md"
           />
           <div>
             <h3 className="font-medium text-gray-900">{item.name}</h3>
             <button 
-              onClick={() => onRemove(item.id)}
+              onClick={() => onRemove(item.product_id)}
               className="text-green-600 text-sm hover:text-green-700"
             >
               Remove
@@ -29,7 +30,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
       <td className="py-4">
         <div className="flex items-center space-x-2">
           <button 
-            onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
+            onClick={() => onUpdateQuantity(item.product_id, item.quantity - 1)}
             className="p-1 rounded-md border border-gray-300 hover:bg-gray-100"
             disabled={item.quantity <= 1}
           >
@@ -42,7 +43,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
             className="w-12 text-center border border-gray-300 rounded-md"
           />
           <button 
-            onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
+            onClick={() => onUpdateQuantity(item.product_id, item.quantity + 1)}
             className="p-1 rounded-md border border-gray-300 hover:bg-gray-100"
           >
             <Plus size={16} />
@@ -57,33 +58,93 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
 };
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "File Kiyilmis Ic",
-      price: 9.99,
-      quantity: 1,
-      image: "/assets/images/kesik.png"
-    }
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const handleUpdateQuantity = (itemId, newQuantity) => {
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const token = localStorage.getItem('accessToken'); // Get the token from localStorage
+        if (!token) throw new Error("User not authenticated");
+
+        const response = await axios.get("http://localhost:5000/cart", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCartItems(response.data);
+      } catch (err) {
+        setError(err.response?.data?.msg || "Failed to load cart items");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  const handleUpdateQuantity = async (productId, newQuantity) => {
     if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  
+    try {
+      setCartItems(items =>
+        items.map(item =>
+          item.product_id === productId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+      const token = localStorage.getItem('accessToken');
+  
+      // Send request to update the quantity in the cart
+      await axios.patch(
+        `http://localhost:5000/cart/update/${productId}`,
+        { quantity: newQuantity },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      // Update the local cart state after successful backend update
+    } catch (err) {
+      console.error("Failed to update quantity", err);
+      setError("Failed to update quantity in the cart.");
+    }
   };
+  
+  
 
-  const handleRemoveItem = (itemId) => {
-    setCartItems(items => items.filter(item => item.id !== itemId));
+  const handleRemoveItem = async (productId) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      await axios.delete(`http://localhost:5000/cart/remove/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCartItems(items => items.filter(item => item.product_id !== productId));
+    } catch (err) {
+      setError("Failed to remove item from cart");
+    }
   };
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  if (loading) {
+    <div className="min-h-screen flex items-center justify-center">
+      <p>Loading your cart...</p>
+    </div>
+  }
+
+  if (error) {
+    <div className="min-h-screen flex items-center justify-center">
+      <p className="text-red-500">{error}</p>
+    </div>
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -116,7 +177,7 @@ const CartPage = () => {
                 <tbody>
                   {cartItems.map(item => (
                     <CartItem
-                      key={item.id}
+                      key={item.product_id}
                       item={item}
                       onUpdateQuantity={handleUpdateQuantity}
                       onRemove={handleRemoveItem}
@@ -142,6 +203,14 @@ const CartPage = () => {
               </Link>
             </div>
           </>
+        ) : loading ? (
+          <div className="flex items-center justify-center">
+            <p>Loading your cart...</p>
+          </div>
+        ) : error ? (
+          <div className="items-center justify-center">
+            <p className="text-red-500">{error}</p>
+          </div>
         ) : (
           <div className="text-center py-12">
             <p className="text-gray-500">Your cart is empty</p>
