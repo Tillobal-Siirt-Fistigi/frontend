@@ -34,7 +34,7 @@ const LoginPage = () => {
       });
       localStorage.setItem('accessToken', response.data.access_token);
       localStorage.setItem('refreshToken', response.data.refresh_token);
-      navigate('/'); // Redirect to a dashboard or another page
+      navigate('/dashboard'); // Redirect to a dashboard or another page
     } catch (err) {
       setError(err.response?.data?.msg || 'Login failed');
     }

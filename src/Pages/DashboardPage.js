@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext'; // Import AuthContext
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { ChevronDown, ChevronUp, LogOut } from 'lucide-react';
@@ -102,65 +102,39 @@ const WishlistItem = ({ item }) => {
   );
 };
 
-const initialWishlistItems = [
-  {
-    id: 1,
-    name: "Raw Pistachios",
-    price: 14.99,
-    addedAt: "2024-03-15",
-    description: "Premium quality raw pistachios"
-  },
-  {
-    id: 2,
-    name: "Roasted Salted Pistachios",
-    price: 16.99,
-    addedAt: "2024-03-16", 
-    description: "Perfectly roasted and salted pistachios"
-  }
-];
-
 const DashboardPage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout } = useContext(AuthContext); // Use AuthContext
+  console.log(user)
   const navigate = useNavigate();
-  const [orders, setOrders] = useState([
-    {
-      orderNumber: "ORD-001",
-      date: "2024-03-01",
-      amount: 29.99,
-      items: [
-        { name: "Raw Pistachios", quantity: 2, price: "14.99" },
-        { name: "Roasted Pistachios", quantity: 1, price: "15.00" }
-      ]
-    },
-    {
-      orderNumber: "ORD-002",
-      date: "2024-01-15",
-      amount: 45.98,
-      items: [
-        { name: "Premium Pistachios", quantity: 2, price: "22.99" }
-      ]
-    }
-  ]);
-  const [wishlist, setWishlist] = useState(initialWishlistItems);
+  const [orders, setOrders] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
 
   useEffect(() => {
-    const fetchWishlist = async () => {
+    const fetchData = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get('http://localhost:5000/wishlist', {
-          headers: { Authorization: `Bearer ${token}` }
+
+        // Fetch orders
+        const ordersResponse = await axios.get('http://localhost:5000/user/orders', {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setWishlist(response.data);
+        setOrders(ordersResponse.data);
+
+        // Fetch wishlist
+        const wishlistResponse = await axios.get('http://localhost:5000/wishlist', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setWishlist(wishlistResponse.data);
       } catch (error) {
-        console.error('Failed to fetch wishlist:', error);
+        console.error('Failed to fetch data:', error);
       }
     };
 
-    fetchWishlist();
+    fetchData();
   }, []);
 
   const handleLogout = () => {
-    logout();
+    logout();  // Call the logout function from AuthContext
     navigate('/');
   };
 
@@ -179,7 +153,7 @@ const DashboardPage = () => {
             </p>
           </div>
           <button
-            onClick={handleLogout}
+            onClick={handleLogout} // Logout when clicked
             className="flex items-center space-x-2 px-4 py-2 text-red-600 hover:bg-red-50 rounded-md"
           >
             <LogOut size={18} />
@@ -192,10 +166,9 @@ const DashboardPage = () => {
           <div>
             <h2 className="text-xl font-medium mb-4">Your Orders</h2>
             <div className="space-y-4">
-              {orders.map((order, index) => (
-                <OrderPanel key={index} order={order} />
-              ))}
-              {orders.length === 0 && (
+              {orders.length > 0 ? (
+                orders.map((order, index) => <OrderPanel key={index} order={order} />)
+              ) : (
                 <p className="text-gray-500 text-center py-8">No orders yet</p>
               )}
             </div>
@@ -205,10 +178,9 @@ const DashboardPage = () => {
           <div>
             <h2 className="text-xl font-medium mb-4">Your Wishlist</h2>
             <div className="space-y-4">
-              {wishlist.map((item) => (
-                <WishlistItem key={item.id} item={item} />
-              ))}
-              {wishlist.length === 0 && (
+              {wishlist.length > 0 ? (
+                wishlist.map((item) => <WishlistItem key={item.id} item={item} />)
+              ) : (
                 <p className="text-gray-500 text-center py-8">Your wishlist is empty</p>
               )}
             </div>

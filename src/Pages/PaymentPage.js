@@ -118,28 +118,58 @@ const PaymentPage = () => {
 
   const handlePayNow = async () => {
     try {
-      const token = localStorage.getItem('accessToken');
+        const token = localStorage.getItem('accessToken');
 
-      for (let item of cartItems) {
-        if (item.quantity > 0) {
-          await axios.patch(
-            `http://localhost:5000/products/stock/decrease/${item.product_id}`,
-            { quantity: item.quantity },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+        // Step 1: Deduct Stock for Each Product
+        for (let item of cartItems) {
+            if (item.quantity > 0) {
+                await axios.patch(
+                    `http://localhost:5000/products/stock/decrease/${item.product_id}`,
+                    { quantity: item.quantity },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
             }
-          );
         }
-      }
 
-      navigate('/thank-you');
+        // Step 2: Add Order to Backend
+        const orderData = {
+            email: formData.email,
+            address: formData.address,
+            shipping: formData.shipping,
+            items: cartItems.map(item => ({
+                product_id: item.product_id,
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image_link: item.image_link,
+            })),
+            totalCost: totalCost,
+        };
+
+        await axios.post('http://localhost:5000/orders/add', orderData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        // Step 3: Clear the Cart
+        await axios.delete('http://localhost:5000/cart/clear', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        // Step 4: Navigate to Thank You Page
+        navigate('/thank-you', { state: { order: orderData } });
     } catch (err) {
-      console.error("Failed to complete payment or deduct stock", err);
-      alert("An error occurred during the payment process.");
+        console.error("Failed to complete payment or process order", err);
+        alert("An error occurred during the payment process.");
     }
-  };
+};
 
   return (
     <div className="min-h-screen flex flex-col">
