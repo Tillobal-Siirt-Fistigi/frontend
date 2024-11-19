@@ -51,7 +51,7 @@ const PaymentPage = () => {
     const fetchCartItems = async () => {
       try {
         const token = localStorage.getItem('accessToken');
-        const response = await axios.get('http://localhost:5000/cart', {
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/cart', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -150,14 +150,14 @@ const PaymentPage = () => {
             total_price: totalCost,
         };
 
-        await axios.post('http://localhost:5000/orders/add', orderData, {
+        await axios.post(process.env.REACT_APP_BACKEND_URL + '/orders/add', orderData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
 
         // Step 3: Clear the Cart
-        await axios.delete('http://localhost:5000/cart/clear', {
+        await axios.delete(process.env.REACT_APP_BACKEND_URL + '/cart/clear', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

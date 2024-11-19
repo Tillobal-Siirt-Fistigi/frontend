@@ -7,88 +7,85 @@ import { storage } from '../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Correct imports for Firebase v9
 
 const AddProductPage = () => {
-    const [productData, setProductData] = useState({
-      name: '',
-      model: '',
-      serial_number: '',
-      description: '',
-      quantity_in_stock: '',
-      price: '',
-      warranty_status: '',
-      distributor_info: '',
-      image_link: '',
-      dimensions: '',
-      weight: '',
-      popularity: 0,
-    });
-  
-    const [imageFile, setImageFile] = useState(null); // To store selected image file
-    const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');
-    const navigate = useNavigate();
-  
-    const handleChange = (e) => {
-      const { name, value } = e.target;
-      setProductData((prevData) => ({
-        ...prevData,
-        [name]: value
-      }));
-    };
-  
-    const handleImageChange = (e) => {
-      setImageFile(e.target.files[0]);  // Set the image file selected by the user
-    };
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-        console.log(imageFile)
-      // If there is an image, upload it to Firebase Storage
-      if (imageFile) {
-        const storageRef = ref(storage, `product_images/${imageFile.name}`); // Create reference
-        const uploadTask = uploadBytes(storageRef, imageFile); // Upload the file
-  
-        uploadTask.then(() => {
-          // Get download URL after upload completes
-          getDownloadURL(storageRef).then((imageUrl) => {
-            // Once the image is uploaded, add the image URL to the product data
-            setProductData((prevData) => ({
-              ...prevData,
-              image_link: imageUrl,
-            }));
-  
-            // Submit product data including the image link to the backend
-            axios.post('http://localhost:5000/products/add', productData, {
+  const [productData, setProductData] = useState({
+    name: '',
+    model: '',
+    serial_number: '',
+    description: '',
+    quantity_in_stock: '',
+    price: '',
+    warranty_status: '',
+    distributor_info: '',
+    image_link: '',
+    dimensions: '',
+    weight: '',
+    popularity: 0,
+    category: '', // New field for category
+  });
+
+  const [imageFile, setImageFile] = useState(null);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProductData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    setImageFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (imageFile) {
+      const storageRef = ref(storage, `product_images/${imageFile.name}`);
+      const uploadTask = uploadBytes(storageRef, imageFile);
+
+      uploadTask.then(() => {
+        getDownloadURL(storageRef).then((imageUrl) => {
+          setProductData((prevData) => ({
+            ...prevData,
+            image_link: imageUrl,
+          }));
+
+          axios
+            .post(process.env.REACT_APP_BACKEND_URL + '/products/add', productData, {
               headers: {
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-              }
+                Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+              },
             })
-            .then(response => {
+            .then((response) => {
               setSuccess(response.data.msg);
-              setTimeout(() => navigate('/'), 2000); // Redirect after success
+              setTimeout(() => navigate('/'), 2000);
             })
-            .catch(err => {
+            .catch((err) => {
               setError(err.response?.data?.msg || 'Failed to add product');
             });
-          });
-        }).catch(error => {
-          setError('Image upload failed');
         });
-      } else {
-        // If no image is selected, just send the product data without the image link
-        axios.post('http://localhost:5000/products/add', productData, {
+      }).catch(() => {
+        setError('Image upload failed');
+      });
+    } else {
+      axios
+        .post(process.env.REACT_APP_BACKEND_URL + '/products/add', productData, {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-          }
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          },
         })
-        .then(response => {
+        .then((response) => {
           setSuccess(response.data.msg);
-          setTimeout(() => navigate('/'), 2000); // Redirect after success
+          setTimeout(() => navigate('/'), 2000);
         })
-        .catch(err => {
+        .catch((err) => {
           setError(err.response?.data?.msg || 'Failed to add product');
         });
-      }
-    };
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">

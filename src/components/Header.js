@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { User, ShoppingCart, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { AuthContext } from '../contexts/AuthContext';
 
 const SimpleDialog = ({ isOpen, onClose, title, content }) => {
   if (!isOpen) return null;
@@ -39,7 +40,7 @@ const SimpleDialog = ({ isOpen, onClose, title, content }) => {
 };
 
 const Header = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useContext(AuthContext)
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState({ isOpen: false, title: '', content: '' });
@@ -95,7 +96,7 @@ const Header = () => {
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="text-gray-700 hover:text-green-600">
+                <Link to={isAuthenticated ? "/dashboard" : "/login"} className="text-gray-700 hover:text-green-600">
                   <User className="w-6 h-6" />
                 </Link>
               )}

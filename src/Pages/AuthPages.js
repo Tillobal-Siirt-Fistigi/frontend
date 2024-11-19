@@ -28,7 +28,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/login', {
+      const response = await axios.post('https://online-store-backend-hhy9.onrender.com/login', {
         identifier: email,
         password,
       });
@@ -103,7 +103,7 @@ const SignupPage = () => {
       return;
     }
     try {
-      await api.post('http://localhost:5000/register', {
+      await api.post(process.env.REACT_APP_BACKEND_URL + '/register', {
         username,
         email,
         password,
