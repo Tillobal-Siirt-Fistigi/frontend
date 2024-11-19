@@ -124,7 +124,7 @@ const PaymentPage = () => {
         for (let item of cartItems) {
             if (item.quantity > 0) {
                 await axios.patch(
-                    `http://localhost:5000/products/stock/decrease/${item.product_id}`,
+                    `${process.env.REACT_APP_BACKEND_URL}/products/stock/decrease/${item.product_id}`,
                     { quantity: item.quantity },
                     {
                         headers: {
@@ -150,7 +150,7 @@ const PaymentPage = () => {
             total_price: totalCost,
         };
 
-        await axios.post(process.env.REACT_APP_BACKEND_URL + '/orders/add', orderData, {
+        await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders/add`, orderData, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

@@ -13,7 +13,7 @@ export const refreshAccessToken = async () => {
 
   try {
     // Send refresh token to the backend to get a new access token
-    const response = await axios.post('http://localhost:5000/refresh', {}, {
+    const response = await axios.post(process.env.REACT_APP_BACKEND_URL + '/refresh', {}, {
       headers: {
         Authorization: `Bearer ${refreshToken}`,  // Pass refresh token in the Authorization header
       },

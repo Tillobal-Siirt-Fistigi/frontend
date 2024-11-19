@@ -121,13 +121,13 @@ const DashboardPage = () => {
         const token = localStorage.getItem('accessToken');
 
         // Fetch orders
-        const ordersResponse = await axios.get('http://localhost:5000/user/orders', {
+        const ordersResponse = await axios.get(process.env.REACT_APP_BACKEND_URL + '/user/orders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(ordersResponse)
         setOrders(ordersResponse.data.order_history);
         // Fetch wishlist
-        const wishlistResponse = await axios.get('http://localhost:5000/wishlist', {
+        const wishlistResponse = await axios.get(process.env.REACT_APP_BACKEND_URL + '/wishlist', {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(wishlistResponse)

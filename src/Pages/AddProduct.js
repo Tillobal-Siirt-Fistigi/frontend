@@ -54,7 +54,7 @@ const AddProductPage = () => {
           }));
 
           axios
-            .post(process.env.REACT_APP_BACKEND_URL + '/products/add', productData, {
+            .post(`${process.env.REACT_APP_BACKEND_URL}/products/add`, productData, {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
               },
@@ -72,7 +72,7 @@ const AddProductPage = () => {
       });
     } else {
       axios
-        .post(process.env.REACT_APP_BACKEND_URL + '/products/add', productData, {
+        .post(`${process.env.REACT_APP_BACKEND_URL}/products/add`, productData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
           },
