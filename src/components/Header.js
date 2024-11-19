@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { User, ShoppingCart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { User, ShoppingCart, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 const SimpleDialog = ({ isOpen, onClose, title, content }) => {
   if (!isOpen) return null;
@@ -38,35 +39,73 @@ const SimpleDialog = ({ isOpen, onClose, title, content }) => {
 };
 
 const Header = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogContent, setDialogContent] = useState({ isOpen: false, title: '', content: '' });
 
   const handleDialogClose = () => {
     setDialogContent({ ...dialogContent, isOpen: false });
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
   return (
     <>
-    <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 h-[72px]">
-      <div className="container mx-auto px-4 h-full flex justify-between items-center">
-        <Link to="/">
-          <img src="/assets/images/pistachiohut_logo.png" alt="PistachioHut Logo" className="h-12" />
-        </Link>
-        <nav className="hidden md:flex space-x-8">
-          <Link to="/products" className="text-gray-700 hover:text-green-600">Products</Link>
-          <Link to="/about" className="text-gray-700 hover:text-green-600">About Us</Link>
-          <Link to="/contact" className="text-gray-700 hover:text-green-600">Contact</Link>
-        </nav>
-        <div className="flex space-x-4">
-          <Link to="/login">
-            <User className="w-6 h-6 text-gray-700" />
+      <header className="fixed top-0 left-0 right-0 bg-white shadow-sm z-40 h-[72px]">
+        <div className="container mx-auto px-4 h-full flex justify-between items-center">
+          <Link to="/">
+            <img src="/assets/images/pistachiohut_logo.png" alt="PistachioHut Logo" className="h-12" />
           </Link>
-          <Link to="/cart">
-            <ShoppingCart className="w-6 h-6 text-gray-700" />
-          </Link>
+          <nav className="hidden md:flex space-x-8">
+            <Link to="/products" className="text-gray-700 hover:text-green-600">Products</Link>
+            <Link to="/about" className="text-gray-700 hover:text-green-600">About Us</Link>
+            <Link to="/contact" className="text-gray-700 hover:text-green-600">Contact</Link>
+          </nav>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              {isAuthenticated ? (
+                <div>
+                  <button 
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-green-600"
+                  >
+                    <User className="w-6 h-6" />
+                  </button>
+                  
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                      <Link
+                        to="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setDropdownOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Link to="/login" className="text-gray-700 hover:text-green-600">
+                  <User className="w-6 h-6" />
+                </Link>
+              )}
+            </div>
+            <Link to="/cart">
+              <ShoppingCart className="w-6 h-6 text-gray-700 hover:text-green-600" />
+            </Link>
+          </div>
         </div>
-      </div>
-    </header>
-      {/* Add a spacer div that's the same height as the header */}
+      </header>
       <div className="h-[72px] w-full"></div>
       
       <SimpleDialog 

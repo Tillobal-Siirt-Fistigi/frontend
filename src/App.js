@@ -14,6 +14,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminDashboard from './Pages/AdminDashboard';
 import AuthProvider from './contexts/AuthContext';
 import AddProductPage from './Pages/AddProduct';
+import DashboardPage from './Pages/DashboardPage';
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/addProduct" element={<AddProductPage />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
 
           {/* Admin routes */}
           <Route 
