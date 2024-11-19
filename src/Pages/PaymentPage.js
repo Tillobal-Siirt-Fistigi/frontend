@@ -134,7 +134,7 @@ const PaymentPage = () => {
                 );
             }
         }
-
+        console.log(totalCost)
         // Step 2: Add Order to Backend
         const orderData = {
             email: formData.email,
@@ -147,7 +147,7 @@ const PaymentPage = () => {
                 quantity: item.quantity,
                 image_link: item.image_link,
             })),
-            totalCost: totalCost,
+            total_price: totalCost,
         };
 
         await axios.post('http://localhost:5000/orders/add', orderData, {

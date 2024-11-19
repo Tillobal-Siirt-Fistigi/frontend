@@ -10,6 +10,7 @@ const OrderPanel = ({ order }) => {
   const [isOpen, setIsOpen] = useState(false);
   const daysSinceOrder = Math.floor((new Date() - new Date(order.created_at)) / (1000 * 60 * 60 * 24));
   const canRefund = daysSinceOrder <= 30;
+
   const formattedStatus = order.status;
 
   return (
@@ -30,6 +31,7 @@ const OrderPanel = ({ order }) => {
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Amount</p>
           <p className="font-medium text-green-600">${order.total_price}</p>
+
         </div>
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Status</p>

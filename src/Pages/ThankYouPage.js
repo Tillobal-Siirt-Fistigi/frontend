@@ -9,27 +9,29 @@ const OrderSummary = ({ order }) => (
     {order ? (
       <>
         {order.items.map((item, index) => (
-          <div key={item.product_id} className="flex items-center space-x-4 mb-4">
+          <div key={item.product_id || index} className="flex items-center space-x-4 mb-4">
             <div className="relative">
               <img
                 src={item.image_link || '/assets/images/default.png'}
-                alt={item.name}
+                alt={item.name || "Unknown item"}
                 className="w-16 h-16 object-cover rounded-md"
               />
               <span className="absolute -top-2 -right-2 bg-green-500 text-white w-5 h-5 flex items-center justify-center rounded-full text-xs">
-                {item.quantity}
+                {item.quantity || 0}
               </span>
             </div>
             <div>
-              <h3 className="font-medium">{item.name}</h3>
-              <p className="text-green-600">${Number(item.price).toFixed(2)}</p>
+              <h3 className="font-medium">{item.name || "Unknown Item"}</h3>
+              <p className="text-green-600">
+                ${Number(item.price || 0).toFixed(2)}
+              </p>
             </div>
           </div>
         ))}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Subtotal</span>
-            <span>${(order.totalCost - (order.shipping === "Express Shipping - $9.99" ? 9.99 : 0)).toFixed(2)}</span>
+            <span>${(Number(order.total_price || 0) - (order.shipping === "Express Shipping - $9.99" ? 9.99 : 0)).toFixed(2)}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Shipping</span>
@@ -39,7 +41,7 @@ const OrderSummary = ({ order }) => (
           </div>
           <div className="flex justify-between items-center pt-3 border-t border-gray-200">
             <span className="font-medium">Total</span>
-            <span className="text-green-600">${order.totalCost.toFixed(2)}</span>
+            <span className="text-green-600">${Number(order.total_price || 0).toFixed(2)}</span>
           </div>
         </div>
       </>
@@ -48,6 +50,7 @@ const OrderSummary = ({ order }) => (
     )}
   </div>
 );
+
 
 const ThankYouPage = () => {
   const location = useLocation();
