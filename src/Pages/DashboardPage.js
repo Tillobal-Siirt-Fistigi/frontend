@@ -10,10 +10,12 @@ const OrderPanel = ({ order }) => {
   const [isOpen, setIsOpen] = useState(false);
   const daysSinceOrder = Math.floor((new Date() - new Date(order.created_at)) / (1000 * 60 * 60 * 24));
   const canRefund = daysSinceOrder <= 30;
-  console.log(order)
+
+  const formattedStatus = order.status;
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-100">
-      <div className="grid grid-cols-6 gap-4 items-center">
+      <div className="grid grid-cols-7 gap-4 items-center">
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Order #</p>
           <p className="font-medium">{order.orderNumber}</p>
@@ -29,6 +31,11 @@ const OrderPanel = ({ order }) => {
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Amount</p>
           <p className="font-medium text-green-600">${order.total_price}</p>
+
+        </div>
+        <div className="px-2">
+          <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Status</p>
+          <p className="font-medium">{formattedStatus}</p>
         </div>
         <div className="px-2">
           <button

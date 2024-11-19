@@ -56,5 +56,5 @@ Follow these steps to run the project locally:
 - Serhan YILMAZ
 - Mustafa Harun Şendur
 - Mustafa Mert Yıldızbaş
-
+- Osman Enes Erdoğdu
 ---
