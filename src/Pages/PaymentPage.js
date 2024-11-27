@@ -118,58 +118,60 @@ const PaymentPage = () => {
 
   const handlePayNow = async () => {
     try {
-        const token = localStorage.getItem('accessToken');
-
-        // Step 1: Deduct Stock for Each Product
-        for (let item of cartItems) {
-            if (item.quantity > 0) {
-                await axios.patch(
-                    `http://localhost:5000/products/stock/decrease/${item.product_id}`,
-                    { quantity: item.quantity },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+      const token = localStorage.getItem('accessToken');
+  
+      // Step 1: Deduct Stock for Each Product
+      for (let item of cartItems) {
+        if (item.quantity > 0) {
+          await axios.patch(
+            `http://localhost:5000/products/stock/decrease/${item.product_id}`,
+            { quantity: item.quantity },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
             }
+          );
         }
-        console.log(totalCost)
-        // Step 2: Add Order to Backend
-        const orderData = {
-            email: formData.email,
-            address: formData.address,
-            shipping: formData.shipping,
-            items: cartItems.map(item => ({
-                product_id: item.product_id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image_link: item.image_link,
-            })),
-            total_price: totalCost,
-        };
-
-        await axios.post(process.env.REACT_APP_BACKEND_URL + '/orders/add', orderData, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        // Step 3: Clear the Cart
-        await axios.delete(process.env.REACT_APP_BACKEND_URL + '/cart/clear', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        // Step 4: Navigate to Thank You Page
-        navigate('/thank-you', { state: { order: orderData } });
+      }
+  
+      // Step 2: Add Order to Backend
+      const orderData = {
+        email: formData.email,
+        shipping_method: formData.shipping,
+        shipping_address: formData.address,
+        shipping_cost: shippingCost,
+        items: cartItems.map(item => ({
+          product_id: item.product_id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image_link: item.image_link,
+        })),
+        total_price: totalCost,
+      };
+  
+      await axios.post(process.env.REACT_APP_BACKEND_URL + '/orders/add', orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      // Step 3: Clear the Cart
+      await axios.delete(process.env.REACT_APP_BACKEND_URL + '/cart/clear', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+  
+      // Step 4: Navigate to Thank You Page
+      navigate('/thank-you', { state: { order: orderData } });
     } catch (err) {
-        console.error("Failed to complete payment or process order", err);
-        alert("An error occurred during the payment process.");
+      console.error('Failed to complete payment or process order', err);
+      alert('An error occurred during the payment process.');
     }
-};
+  };
+  
 
   return (
     <div className="min-h-screen flex flex-col">

@@ -5,6 +5,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios';
 import { AuthContext } from '../contexts/AuthContext';
+import { addItemToLocalStorageCart, getCartFromLocalStorage } from '../utils/cartUtils';
 
 // StarRating component for displaying ratings
 const StarRating = ({ rating }) => {
@@ -213,25 +214,36 @@ const ProductDetailsPage = () => {
 
   const handleAddToCart = async () => {
     if (!product || product.quantity_in_stock < quantity) {
-      setMessage("This product is currently out of stock.");
+      setMessage('This product is currently out of stock.');
       return;
     }
 
-    const token = localStorage.getItem('accessToken');  // Get the token from localStorage
+    if (!isAuthenticated) {
+      // Guest user: Store the item in local storage
+      const item = {
+        product_id: product.id,
+        name: product.name,
+        price: product.price,
+        quantity,
+        image_link: product.image_link,
+      };
 
-    if (!token) {
-      setMessage("You must be logged in to add products to your cart.");
+      addItemToLocalStorageCart(item);
+      setMessage('Product added to cart.');
       return;
     }
+
+    const token = localStorage.getItem('accessToken'); // Get the token from local storage
 
     try {
+      // Authenticated user: Call the backend API
       const user_id = user.email;
       const response = await axios.post(
-        "http://localhost:5000/cart/add",
+        'http://localhost:5000/cart/add',
         {
-          user_id,  // User ID
-          product_id: product.id,  // Product ID
-          quantity,  // Product Quantity
+          user_id, // User ID
+          product_id: product.id, // Product ID
+          quantity, // Product quantity
         },
         {
           headers: {
@@ -242,10 +254,11 @@ const ProductDetailsPage = () => {
 
       setMessage(response.data.msg); // Display success message
     } catch (error) {
-      const errorMsg = error.response?.data?.msg || "An error occurred";
+      const errorMsg = error.response?.data?.msg || 'An error occurred';
       setMessage(errorMsg); // Display error message
     }
   };
+
 
   const handleAddToWishlist = async () => {
     if (!isAuthenticated) {
@@ -255,11 +268,12 @@ const ProductDetailsPage = () => {
 
     const token = localStorage.getItem('accessToken'); // Get the token from localStorage
 
+    /*
     if (!token) {
       setMessage("You must be logged in to add products to your wishlist.");
       return;
     }
-
+    */
     try {
       const user_id = user.email; // Assuming user.email is the user ID
       const response = await axios.post(

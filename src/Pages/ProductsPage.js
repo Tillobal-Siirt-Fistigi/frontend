@@ -60,7 +60,7 @@ const ProductsPage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/products/all');
+        const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/products/all');
         console.log(response.data); // Debugging: Check this output
         setProducts(response.data);
         localStorage.setItem('products', JSON.stringify(response.data));

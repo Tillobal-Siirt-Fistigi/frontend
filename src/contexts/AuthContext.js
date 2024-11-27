@@ -19,8 +19,9 @@ const AuthProvider = ({ children }) => {
 
   // Fetch user data using the access token
   const fetchUserData = async (token) => {
+    console.log(token)
     try {
-      const response = await axios.get('http://localhost:5000/user/data', {
+      const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/user/data', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);

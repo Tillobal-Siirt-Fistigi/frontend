@@ -13,12 +13,15 @@ const OrderPanel = ({ order }) => {
 
   const formattedStatus = order.status;
 
+  // Calculate total cost per item
+  const calculateItemTotal = (price, quantity) => (price * quantity).toFixed(2);
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-4 mb-4 border border-gray-100">
       <div className="grid grid-cols-7 gap-4 items-center">
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Order #</p>
-          <p className="font-medium">{order.orderNumber}</p>
+          <p className="font-medium">{order.order_number}</p>
         </div>
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Date</p>
@@ -30,8 +33,7 @@ const OrderPanel = ({ order }) => {
         </div>
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Amount</p>
-          <p className="font-medium text-green-600">${order.total_price}</p>
-
+          <p className="font-medium text-green-600">${order.total_price.toFixed(2)}</p>
         </div>
         <div className="px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Status</p>
@@ -63,15 +65,44 @@ const OrderPanel = ({ order }) => {
         <div className="mt-4 pt-4 border-t border-gray-100">
           <h4 className="font-medium mb-2 text-sm uppercase tracking-wider text-gray-500">Order Details</h4>
           <div className="bg-gray-50 rounded-md p-3">
+            {/* Order Items */}
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div className="text-gray-500">Item</div>
-              <div className="text-gray-500 text-right">Price</div>
+              <div className="text-gray-500 text-right">Total Price</div>
               {order.items.map((item, index) => (
                 <React.Fragment key={index}>
-                  <div>{item.name} x{item.quantity}</div>
-                  <div className="text-right text-green-600">${item.price}</div>
+                  <div>
+                    {item.name} x{item.quantity}
+                  </div>
+                  <div className="text-right text-green-600">
+                    ${calculateItemTotal(item.price, item.quantity)}
+                  </div>
                 </React.Fragment>
               ))}
+            </div>
+
+            {/* Shipping Details */}
+            <div className="mt-4">
+              <h5 className="font-medium text-sm uppercase tracking-wider text-gray-500 mb-2">Shipping Details</h5>
+              <div className="text-sm">
+                <p>
+                  <span className="text-gray-500">Method:</span> {order.shipping.method}
+                </p>
+                <p>
+                  <span className="text-gray-500">Address:</span> {order.shipping.address}
+                </p>
+                <p>
+                  <span className="text-gray-500">Cost:</span> ${order.shipping.cost.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            {/* Total Cost */}
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <h5 className="font-medium text-sm uppercase tracking-wider text-gray-500 mb-2">Order Total</h5>
+              <p className="text-right font-medium text-green-600 text-lg">
+                ${order.total_price.toFixed(2)}
+              </p>
             </div>
           </div>
         </div>
@@ -79,6 +110,8 @@ const OrderPanel = ({ order }) => {
     </div>
   );
 };
+
+
 
 const WishlistItem = ({ item }) => {
   return (
@@ -94,11 +127,11 @@ const WishlistItem = ({ item }) => {
         </div>
         <div className="col-span-2 px-2">
           <p className="text-xs uppercase tracking-wider text-gray-500 mb-1">Added On</p>
-          <p className="font-medium">{new Date(item.created_at).toLocaleDateString()}</p>
+          <p className="font-medium">{new Date(item.added_on).toLocaleDateString()}</p>
         </div>
         <div className="col-span-2 px-2">
           <Link 
-            to={`/product/${item.id}`}
+            to={`/product/${item.product_id}`}
             className="w-full px-3 py-1 text-sm bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors flex items-center justify-center"
           >
             Go to Product
@@ -121,13 +154,13 @@ const DashboardPage = () => {
         const token = localStorage.getItem('accessToken');
 
         // Fetch orders
-        const ordersResponse = await axios.get('http://localhost:5000/user/orders', {
+        const ordersResponse = await axios.get(process.env.REACT_APP_BACKEND_URL + '/user/orders', {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(ordersResponse)
         setOrders(ordersResponse.data.order_history);
         // Fetch wishlist
-        const wishlistResponse = await axios.get('http://localhost:5000/wishlist', {
+        const wishlistResponse = await axios.get(process.env.REACT_APP_BACKEND_URL + '/wishlist', {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(wishlistResponse)
