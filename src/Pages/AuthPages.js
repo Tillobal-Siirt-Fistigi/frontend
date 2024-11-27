@@ -54,7 +54,7 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault(); // Prevent default form submission
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/login`, {
+      const response = await axios.post(process.env.REACT_APP_BACKEND_URL + '/login', {
         identifier: email,
         password,
       });

@@ -72,7 +72,6 @@ const CartPage = () => {
       try {
         if (isAuthenticated) {
           // Authenticated users fetch cart from backend
-          console.log(token)
           const response = await axios.get("http://localhost:5000/cart", {
             headers: {
               Authorization: `Bearer ${token}`,

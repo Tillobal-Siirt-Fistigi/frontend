@@ -22,6 +22,7 @@ const AuthProvider = ({ children }) => {
     console.log(token)
     try {
       const response = await axios.get(process.env.REACT_APP_BACKEND_URL + '/user/data', {
+
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);
@@ -35,6 +36,7 @@ const AuthProvider = ({ children }) => {
           fetchUserData(newAccessToken); // Fetch user data with new access token
         } else {
           setIsAuthenticated(false); // If refresh fails, log out the user
+          setUser(null);
         }
       }
     }
