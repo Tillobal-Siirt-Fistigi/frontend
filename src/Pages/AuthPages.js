@@ -1,10 +1,34 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext'; // import AuthContext
 import api from '../utils/axiosInstance'; // import axios instance
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import axios from 'axios'
+
+export const mergeCartOnLogin = async (token) => {
+  const localCart = JSON.parse(localStorage.getItem('cart')) || [];
+
+  if (localCart.length === 0) return;
+
+  try {
+    await axios.post(
+      `${process.env.REACT_APP_BACKEND_URL}/cart/merge`,
+      { items: localCart },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    // Clear the local storage cart after merging
+    localStorage.removeItem('cart');
+    console.log('Cart merged successfully');
+  } catch (error) {
+    console.error('Error merging cart:', error);
+  }
+};
 
 const AuthLayout = ({ children }) => (
   <div className="min-h-screen flex flex-col">
@@ -18,6 +42,8 @@ const AuthLayout = ({ children }) => (
   </div>
 );
 
+
+
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,20 +52,26 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission
     try {
       const response = await axios.post(process.env.REACT_APP_BACKEND_URL + '/login', {
         identifier: email,
         password,
       });
+
       localStorage.setItem('accessToken', response.data.access_token);
       localStorage.setItem('refreshToken', response.data.refresh_token);
-      navigate('/dashboard'); // Redirect to a dashboard or another page
-    } catch (err) {
-      setError(err.response?.data?.msg || 'Login failed');
+      login(response.data.access_token, response.data.refresh_token)
+      // Merge the cart after login
+      await mergeCartOnLogin(response.data.access_token);
+
+      // Redirect to the previous page or homepage
+      navigate('/');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError(error.response?.data?.msg || 'Login failed');
     }
   };
-  
 
   return (
     <AuthLayout>
@@ -85,6 +117,7 @@ const LoginPage = () => {
     </AuthLayout>
   );
 };
+
 
 const SignupPage = () => {
   const [username, setUsername] = useState('');
