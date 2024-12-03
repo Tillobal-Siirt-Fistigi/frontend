@@ -118,6 +118,7 @@ const PaymentPage = () => {
 
   const handlePayNow = async () => {
     try {
+        console.log("User object:", user); // Debug user object
         const token = localStorage.getItem('accessToken');
 
         // Step 1: Deduct Stock for Each Product
@@ -136,18 +137,21 @@ const PaymentPage = () => {
         }
         console.log(totalCost)
         // Step 2: Add Order to Backend
+
+
         const orderData = {
-            email: formData.email,
-            address: formData.address,
-            shipping: formData.shipping,
-            items: cartItems.map(item => ({
-                product_id: item.product_id,
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                image_link: item.image_link,
-            })),
-            total_price: totalCost,
+          user_id: user.email,
+          email: formData.email,
+          address: formData.address,
+          shipping: formData.shipping,
+          items: cartItems.map(item => ({
+              product_id: item.product_id,
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              image_link: item.image_link,
+          })),
+          total_price: totalCost,
         };
 
         await axios.post(`${process.env.REACT_APP_BACKEND_URL}/orders/add`, orderData, {
