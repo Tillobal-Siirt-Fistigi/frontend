@@ -62,7 +62,7 @@ const PaymentPage = () => {
         let total = 0;
 
         for (let item of fetchedCartItems) {
-          const productResponse = await axios.get(`http://localhost:5000/products/${item.product_id}`);
+          const productResponse = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/products/${item.product_id}`);
           const product = productResponse.data;
 
           if (product.quantity_in_stock === 0) {
@@ -124,7 +124,7 @@ const PaymentPage = () => {
       for (let item of cartItems) {
         if (item.quantity > 0) {
           await axios.patch(
-            `http://localhost:5000/products/stock/decrease/${item.product_id}`,
+            `http:///products/stock/decrease/${item.product_id}`,
             { quantity: item.quantity },
             {
               headers: {
