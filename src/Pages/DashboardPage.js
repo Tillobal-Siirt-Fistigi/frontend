@@ -11,7 +11,7 @@ const OrderPanel = ({ order }) => {
   const daysSinceOrder = Math.floor((new Date() - new Date(order.created_at)) / (1000 * 60 * 60 * 24));
   const canRefund = daysSinceOrder <= 30;
 
-  const formattedStatus = order.status;
+  const formattedStatus = order.refund_processing;
 
   // Calculate total cost per item
   const calculateItemTotal = (price, quantity) => (price * quantity).toFixed(2);
