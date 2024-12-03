@@ -123,15 +123,15 @@ const PaymentPage = () => {
       // Step 1: Deduct Stock for Each Product
       for (let item of cartItems) {
         if (item.quantity > 0) {
-          await axios.patch(
-            `http:///products/stock/decrease/${item.product_id}`,
+            await axios.patch(
+            `${process.env.REACT_APP_BACKEND_URL}/products/stock/decrease/${item.product_id}`,
             { quantity: item.quantity },
             {
               headers: {
-                Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
               },
             }
-          );
+            );
         }
       }
   
